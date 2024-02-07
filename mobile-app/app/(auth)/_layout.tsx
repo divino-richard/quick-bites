@@ -3,12 +3,15 @@ import { Redirect, Tabs } from 'expo-router';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+    <>
+      <StatusBar style={'auto'} backgroundColor="transparent" />
+      <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
@@ -18,5 +21,6 @@ export default function TabLayout() {
         name="login"
       />
     </Tabs>
+    </>
   );
 }

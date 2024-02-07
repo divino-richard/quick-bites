@@ -1,16 +1,18 @@
 import { Text, View } from '@/components/Themed';
-import { Image, TextInput, TouchableOpacity } from 'react-native';
+import { Image, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
-export default function TabOneScreen() {
+export default function Login() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View className="flex-1">
-      <View className='items-center py-12 mt-5'>
+    <ScrollView className="bg-white">
+      <View className='items-center py-5 mt-5'>
         <Image 
-          className="h-[200px] w-[200px]"
+          className="h-[250px] w-[250px]"
           source={require("../../assets/images/quick-bites-logo.png")}/>
       </View>
       <View className='px-5 gap-y-5'>
@@ -34,8 +36,16 @@ export default function TabOneScreen() {
         <TouchableOpacity className='p-4 bg-rose-600 rounded-2xl'>
           <Text className='text-center text-white font-bold text-sm'>Login</Text>
         </TouchableOpacity>
+
+        <View className="flex-row gap-x-2 justify-center">
+          <Text className='text-sky-900'>Doesn't have an account?</Text>
+          <TouchableOpacity>
+          <Text className='text-rose-600' onPress={() => router.push("/(auth)/register")}>Register here</Text>
+          </TouchableOpacity>
+        </View>
+
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
