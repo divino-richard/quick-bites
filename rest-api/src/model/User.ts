@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const UserType = {
-    values: ['customer', 'driver', 'merchant'],
+    values: ['customer', 'rider', 'merchant'],
     message: "Invalid user type"
 };
 
@@ -13,9 +13,7 @@ const userSchema = new Schema({
         required: [true, "Frist name is required"],
     },
     lastName: String,
-    middleName: String,
     phoneNumber: String,
-    address: String,
     userType: {
         type: String,
         enum: UserType

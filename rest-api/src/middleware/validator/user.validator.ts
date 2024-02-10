@@ -3,20 +3,22 @@ import { check } from "express-validator";
 export const validateRegistration = [
     check('firstName')
         .exists().withMessage("First name is required")
+        .notEmpty().withMessage("First name is required")
         .isString().withMessage("Invalid first name"),
     check('lastName')
         .exists().withMessage("Last name is required")
+        .notEmpty().withMessage("Last name is required")
         .isString().withMessage("Invalid first name"),
     check('phoneNumber')
         .exists().withMessage("Phone number is required")
+        .notEmpty().withMessage("Phone number is required")
         .isString().withMessage("Invalid phone number"),
-    check('address')
-        .exists().withMessage("Address is required")
-        .isString().withMessage("Invalid address"),
     check('userType')
-        .exists().withMessage("User type is required"),
+        .exists().withMessage("User type is required")
+        .isString().withMessage("Invalid user type"),
     check('email')
         .exists().withMessage("Email is required")
+        .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email"),
     check('password')
         .custom((value) => {
