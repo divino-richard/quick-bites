@@ -40,8 +40,9 @@ export const validateRegistration = [
 export const validateLogIn = [
     check('email')
         .exists().withMessage("Email is required")
+        .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email"),
     check('password')
         .exists().withMessage("Password is required")
-        .isLength({min: 8}).withMessage("Password must be 8 characters long")
+        .notEmpty().withMessage("Password is required")
 ]

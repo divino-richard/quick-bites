@@ -36,7 +36,8 @@ export async function setStorageItemAsync(key: string, value: string | null) {
     }
 }
 
-export function useStorageState(key: string): UseStateHook<string> {
+export function useSession(): UseStateHook<string> {
+    const key = 'session';
     const [state, setState] = useAsyncState<string>()
 
     React.useEffect(() => {

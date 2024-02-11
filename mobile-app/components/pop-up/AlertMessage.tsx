@@ -21,10 +21,12 @@ function AlertMessage(props: Props) {
         >
             <View className='flex-1 justify-center'>
                 <View className='p-5 bg-white shadow-lg shadow-slate-700 w-[80%] mx-auto items-center rounded-md'>
-                    {type === "success" && <Image className='w-20 h-20' source={require('../../assets/images/double-check.gif')} /> }
+                    {type === "success" && (
+                        <Image className='w-[50px] h-[50px] mb-2' source={require('../../assets/images/check.gif')} />
+                    )}
                     <Text className='font-bold text-slate-700'>{message}</Text>
                     <TouchableOpacity
-                        className='w-[50%] items-center p-3 mt-5 bg-[#003885] rounded-lg'
+                        className='w-[50%] items-center p-3 mt-10 bg-[#FF6427] rounded-lg'
                         onPress={onOkay}
                     >
                         <Text className='text-white font-bold text-sm'>{okText || 'Ok'}</Text>
