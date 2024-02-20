@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import apiClient from "@/utils/apiClient";
 import AlertMessage from "@/components/pop-up/AlertMessage";
-import {TextInput, Text } from "react-native-paper";
+import {TextInput, Text, Checkbox } from "react-native-paper";
 import Registration from "@/constants/Registration";
 import RegistrationTypeCard from "@/components/registration/RegistrationTypeCard";
 import Colors from "@/constants/Colors";
@@ -25,6 +25,7 @@ export default function Register () {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [registerError, setRegisterError] = useState("");
     const [showRegisterSuccess, setShowRegistrationSuccess] = useState(false);
+    const [showPasswords, setShowPasswords] = useState(false)
 
     const {
         mutate: mutateRegistration, 
@@ -162,7 +163,7 @@ export default function Register () {
                                 colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
                             }}
                             style={styles.textInput}
-                            secureTextEntry={true}
+                            secureTextEntry={showPasswords ? false : true}
                             onChangeText={(text) => setPassword(text)}
                         />
                         <TextInput 
@@ -173,9 +174,17 @@ export default function Register () {
                                 colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
                             }}
                             style={styles.textInput}
-                            secureTextEntry={true}
+                            secureTextEntry={showPasswords ? false : true}
                             onChangeText={(text) => setConfirmPassword(text)}
                         />
+                        <View style={styles.showPasswordsContainer}>
+                            <Checkbox 
+                                status={showPasswords ? 'checked' : 'unchecked'} 
+                                onPress={() => setShowPasswords(!showPasswords)}
+                                color={Colors.orange}
+                            />
+                            <Text variant="labelMedium">Show passwords</Text>
+                        </View>
                     </View>
 
                     <View>
@@ -256,5 +265,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         columnGap: 10,
         padding: 15
+    },
+    showPasswordsContainer: {
+        flexDirection: "row",
+        alignItems: "center"
     }
 })
