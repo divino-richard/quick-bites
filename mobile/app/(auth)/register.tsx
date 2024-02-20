@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { UserType } from "@/types/user.types";
@@ -8,9 +8,10 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import apiClient from "@/utils/apiClient";
 import AlertMessage from "@/components/pop-up/AlertMessage";
-import { Card } from "react-native-paper";
+import {TextInput, Text } from "react-native-paper";
 import Registration from "@/constants/Registration";
 import RegistrationTypeCard from "@/components/registration/RegistrationTypeCard";
+import Colors from "@/constants/Colors";
 
 export default function Register () {
     const router = useRouter();
@@ -72,7 +73,10 @@ export default function Register () {
         <View style={styles.container}> 
             {registrationStep === 1 && 
                 <View>
-                    <Text>
+                    <Text 
+                        variant="headlineMedium" 
+                        style={styles.registrationHeaderText}
+                    >
                         Select your registration type below
                     </Text>
 
@@ -87,67 +91,118 @@ export default function Register () {
                             />
                         ))}
                     </View>
-
-                    <TouchableOpacity onPress={() => router.back()} >
-                        <Ionicons name="arrow-back-outline" size={24} color="#FFF" />
-                        <Text>Back</Text>
-                    </TouchableOpacity>
                 </View>
             }
                     
             {registrationStep === 2 && (
-                <View>
-                    <Text>
+                <View style={{rowGap: 15}}>
+                    <Text 
+                        variant="headlineMedium" 
+                        style={styles.registrationHeaderText}
+                    >
                         {`${capitalize(userType)}'s`} Account Registration
                     </Text>
                     
-                    <View>
+                    <View style={styles.inputContainer}>
                         {registerError && (
-                            <Text>{registerError}</Text>
+                            <Text 
+                                variant='labelSmall' 
+                                style={{color: 'red', textAlign: 'center'}}
+                            >
+                                {registerError}
+                            </Text>
                         )}
                         <TextInput 
-                            placeholder="First name"
+                            mode='flat'
+                            label="First name"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             onChangeText={(text) => setFirstName(text)}
                         />
                         <TextInput 
-                            placeholder="Last name"
+                            mode='flat'
+                            label="Last name"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             onChangeText={(text) => setLastName(text)}
                         />
                         <TextInput 
+                            mode='flat'
+                            label="Phone number"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             keyboardType="numeric"
-                            placeholder="Phone number"
                             onChangeText={(text) => setPhoneNumber(text)}
                         />
                         <TextInput 
+                            mode='flat'
+                            label="Email"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             keyboardType="email-address"
-                            placeholder="Email"
                             onChangeText={(text) => setEmail(text)}
                         />
                         <TextInput 
+                            mode='flat'
+                            label="Password"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             secureTextEntry={true}
-                            placeholder="Password"
                             onChangeText={(text) => setPassword(text)}
                         />
                         <TextInput 
+                            mode='flat'
+                            label="Confirm password"
+                            activeUnderlineColor={Colors.orange}
+                            theme={{
+                                colors: {outline: Colors.darkBlue, surfaceVariant: '#f8f8f8'},
+                            }}
+                            style={styles.textInput}
                             secureTextEntry={true}
-                            placeholder="Confirm password"
                             onChangeText={(text) => setConfirmPassword(text)}
                         />
                     </View>
 
-                    <TouchableOpacity 
-                        onPress={handleRegistration}
-                        disabled={pendingRegistration}
-                    >
-                        {pendingRegistration && (<ActivityIndicator size={'small'} color={'#FFF'}/>)}
-                        <Text>Register</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={() => setRegistrationStep(1)}
-                    >
-                        <Ionicons name="arrow-back-outline" size={18} color="#FFF" />
-                        <Text>Back</Text>
-                    </TouchableOpacity>
+                    <View>
+                        <TouchableOpacity 
+                            onPress={handleRegistration}
+                            disabled={pendingRegistration}
+                            style={styles.registerButton}
+                        >
+                            {pendingRegistration 
+                                ? <ActivityIndicator size={'small'} color={'#FFF'}/> 
+                                : <Text 
+                                        style={styles.registerButtonText}
+                                    variant="labelLarge"
+                                >
+                                    Register
+                                </Text>
+                            }
+                            
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            onPress={() => setRegistrationStep(1)}
+                            style={styles.backButton}
+                        >
+                            <Ionicons name="arrow-back-outline" size={18} color="#000" />
+                            <Text variant="labelLarge">Back</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
 
@@ -167,10 +222,39 @@ export default function Register () {
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 25
+        flex: 1,
+        paddingVertical: 25,
+        paddingHorizontal: 15,
+        backgroundColor: "#FFF",
     },
     cardWrapper: {
-        padding: 15,
         rowGap: 15
     },
+    registrationHeaderText: {
+        paddingVertical: 15,
+    },
+    inputContainer: {
+        rowGap: 15
+    },
+    textInput: {
+        fontSize: 14, 
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
+    },
+    registerButton: {
+        backgroundColor: Colors.orange,
+        padding: 15,
+        borderRadius: 10
+    },
+    registerButtonText: {
+        color: "#FFF",
+        textAlign: "center"
+    },
+    backButton: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        columnGap: 10,
+        padding: 15
+    }
 })

@@ -16,7 +16,7 @@ apiClient.interceptors.request.use(
             parsedSession = JSON.parse(session);
         }
 
-        config.baseURL = "http://192.168.11.114:5000"
+        config.baseURL = "http://192.168.1.148:5000"
         config.timeout = 10000
         config.headers["Content-Type"] = "application/json"
         config.headers["Authorization"] = `Bearer ${parsedSession ? parsedSession.token : ''}`

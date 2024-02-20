@@ -12,11 +12,12 @@ export default function TabLayout() {
     <>
       <StatusBar style={'auto'} backgroundColor="transparent" />
       <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarStyle: { display: 'none' }
-      }}>
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          headerShown: false,
+          tabBarStyle: { display: 'none' }
+        }}
+      >
       <Tabs.Screen
         name="login"
       />
