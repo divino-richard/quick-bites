@@ -18,4 +18,7 @@ export default {
   },
   darkBlue: '#003885',
   orange: '#FF5722',
+  darkGray: "#757575",
+  gray: "#BDBDBD",
+  lightGray: "#EEEEEE"
 };

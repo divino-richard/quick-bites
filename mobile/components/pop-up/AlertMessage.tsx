@@ -24,10 +24,16 @@ export default function AlertMessage(props: Props) {
             <View style={styles.container}>
                 <View style={styles.content}>
                     {type === "success" && (
-                        <Image style={{width: 80, height: 80}} source={require('../../assets/images/check.gif')} />
+                        <Image 
+                            style={{width: 80, height: 80}} 
+                            source={require('../../assets/images/check.gif')} 
+                        />
                     )}
                     {type === "error" && (
-                        <Image style={{width: 80, height: 80}} source={require('../../assets/images/error.gif')} />
+                        <Image 
+                            style={{width: 80, height: 80}} 
+                            source={require('../../assets/images/error.gif')} 
+                        />
                     )}
                     <Text variant="labelLarge">{message}</Text>
                     
