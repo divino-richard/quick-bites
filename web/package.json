@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vee-validate/zod": "^4.12.5",
     "@vueuse/core": "^10.8.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -16,8 +17,10 @@
     "radix-vue": "^1.4.8",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.12.5",
     "vue": "^3.4.19",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
