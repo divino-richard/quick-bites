@@ -17,7 +17,7 @@ const menus = [
 </script>
 
 <template>
-    <div className="bg-slate-700 w-[300px] h-screen p-5">
+    <div className="bg-zinc-900 w-[300px] h-screen p-5">
         <div className="mb-10">
             <h1 className="text-white text-lg">Welcome back</h1>
             <p className="text-slate-400 text-sm">Richard Divino</p>
@@ -25,7 +25,7 @@ const menus = [
         <div >
             <div v-for="(menuItem, index) in menus" :key="index" >
                 <RouterLink :to="menuItem.path">
-                    <div :class="`p-2 ${menuItem.path === route.fullPath ? 'bg-slate-600' : ''} rounded-sm`">
+                    <div :class="`p-2 ${menuItem.path === route.fullPath ? 'bg-zinc-800' : ''} rounded-sm`">
                         <p className="text-sm text-white">{{ menuItem.label }}</p>
                     </div>
                 </RouterLink>
