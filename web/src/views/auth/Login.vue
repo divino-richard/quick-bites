@@ -8,8 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ref } from 'vue';
+import api from '../../utils/api';
+import { Credentials } from '../../types/user.types';
+import router from '@/router';
 
 let showPassword = ref(false);
+let loginLoading = ref(false);
+let loginErrorMessage = ref("");
 
 const formSchema = toTypedSchema(z.object({
     email: z.string().min(2),
@@ -20,14 +25,24 @@ const form = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log("Values", values);
-})
+const onSubmit = form.handleSubmit(async (data: Credentials) => {
+    loginLoading.value = true;
+    await api.post('/auth/login', data)
+        .then((response) => {
+            const session = JSON.stringify(response.data)
+            localStorage.setItem('user-session', session)
+            router.replace({path: '/admin'})
+        })
+        .catch((error) => {
+            loginErrorMessage.value = error.response.data.message;
+        }).finally(() => {
+            loginLoading.value = false;
+        })
+});
 
 const togglePassword = (checked: boolean) => {
     showPassword.value = checked
 }
-
 </script>
 
 <template>
@@ -35,6 +50,8 @@ const togglePassword = (checked: boolean) => {
         <form @submit="onSubmit" className="flex flex-col w-full max-w-[400px] gap-y-5">
             <h1 className="text-lg font-bold">Log In</h1>
             
+            <p v-if="loginErrorMessage" className="text-red-500 font-semibold text-sm text-center">{{loginErrorMessage}}</p> 
+
             <FormField v-slot="{componentField}" name="email">
                 <FormItem>
                     <FormLabel>Email</FormLabel>
