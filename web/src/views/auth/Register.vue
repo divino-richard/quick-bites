@@ -107,7 +107,7 @@
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Fruits</SelectLabel>
+                                <SelectLabel>Register as</SelectLabel>
                                 <SelectItem value="apple">
                                     Apple
                                 </SelectItem>
