@@ -5,6 +5,7 @@ import Login from '@/views/auth/Login.vue';
 import MerchantDashboard from '@/views/merchant/Dashboard.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
+import { getSession } from "@/utils/session.utils";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -28,20 +29,45 @@ const router = createRouter({
             path: '/admin',
             name: 'admin-dashboard',
             component: AdminDashboard,
-            children: [
-                {
-                    path: '/admin/user',
-                    name: 'user',
-                    component: User
-                }
-            ]
+            meta: {
+                authorize: ['admin']
+            }
+        },
+        {
+            path: '/admin/user',
+            name: 'user',
+            component: User,
+            meta: {
+                authorized: ['admin']
+            }
         },
         {   
             path: '/merchant',
             name: 'merchant-dashboard',
-            component: MerchantDashboard
-        }
+            component: MerchantDashboard,
+            meta: {
+                authorize: ['merchant']
+            }
+        },
     ],
+})
+
+router.beforeEach((to, from, next) => {
+    const authorize = to.meta.authorize as string[];
+
+    if(authorize) {
+        const session = getSession();
+        if(!session || !authorize.includes(session.userData.userType)) {
+            return next({
+                path: '/auth/login', 
+                query: { 
+                    returnUrl: to.path 
+                }
+            })
+        }
+    }
+
+    next();
 })
 
 export default router

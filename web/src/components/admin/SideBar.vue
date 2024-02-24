@@ -1,8 +1,9 @@
 
 <script setup lang="ts">
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 
 const menus = [
     {
@@ -13,7 +14,12 @@ const menus = [
         label: "User",
         path: "/admin/user"
     }
-]
+];
+
+const handleLogout = () => {
+    localStorage.removeItem("user-session");
+    router.replace('/')
+}
 </script>
 
 <template>
@@ -22,14 +28,20 @@ const menus = [
             <h1 className="text-white text-lg">Welcome back</h1>
             <p className="text-slate-400 text-sm">Richard Divino</p>
         </div>
-        <div >
+        <div className="space-y-1">
             <div v-for="(menuItem, index) in menus" :key="index" >
                 <RouterLink :to="menuItem.path">
-                    <div :class="`p-2 ${menuItem.path === route.fullPath ? 'bg-zinc-800' : ''} rounded-sm`">
+                    <div :class="`p-2 ${menuItem.path === route.fullPath ? 'bg-zinc-800' : ''} rounded-sm hover:bg-zinc-800`">
                         <p className="text-sm text-white">{{ menuItem.label }}</p>
                     </div>
                 </RouterLink>
             </div>
         </div>
+        <Button 
+            @click="handleLogout" 
+            className="w-full text-left text-white text-sm p-2 rounded-sm hover:bg-zinc-800"
+        >
+            Logout
+        </Button>
     </div>
 </template>

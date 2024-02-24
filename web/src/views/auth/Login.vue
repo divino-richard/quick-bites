@@ -11,6 +11,7 @@ import { ref } from 'vue';
 import api from '../../utils/api';
 import { Credentials } from '../../types/user.types';
 import router from '@/router';
+import { setSession } from '@/utils/session.utils';
 
 let showPassword = ref(false);
 let loginLoading = ref(false);
@@ -29,8 +30,8 @@ const onSubmit = form.handleSubmit(async (data: Credentials) => {
     loginLoading.value = true;
     await api.post('/auth/login', data)
         .then((response) => {
-            const session = JSON.stringify(response.data)
-            localStorage.setItem('user-session', session)
+            console.log(response)
+            setSession(response.data)
             router.replace({path: '/admin'})
         })
         .catch((error) => {
@@ -80,8 +81,8 @@ const togglePassword = (checked: boolean) => {
                 </label>
             </div>
 
-            <Button type="submit">
-                Login
+            <Button type="submit" :disabled="loginLoading">
+                {{loginLoading ? 'Loading...' : 'Login'}}
             </Button>
         </form>
     </div>
