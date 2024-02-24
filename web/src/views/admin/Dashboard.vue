@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <div className="flex flex-1 h-screen bg-zinc-800">
+    <div className="flex flex-1 h-screen bg-zinc-900">
         <AdminSideBar />
         <div>
             <h1>Admin Dashboard</h1>

@@ -4,12 +4,14 @@ export interface Credentials {
     password: string;
 }
 
+export type UserType = 'admin' | 'rider' | 'merchant' | 'customer';
+
 export interface UserData {
     firstName: string;
     lastName: string;
     email: string;
     phoneNumber: string;
-    userType: string;
+    userType: UserType;
 }
 
 export interface UserSession {
