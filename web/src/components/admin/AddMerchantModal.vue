@@ -10,13 +10,18 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
+FormMessage,
 } from '@/components/ui/form'
 import { Button } from '../ui/button';
-import { Slider } from '@/components/ui/slider'
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
+import { Input } from '../ui/input';
+import api from '@/utils/api';
+import { ref } from 'vue';
+
+const registerError = ref('');
+const registerLoading = ref(false);
 
 interface Props {
   onUpdateOpen: (value: boolean) => void;
@@ -28,56 +33,62 @@ defineProps<Props>();
 const formSchema = toTypedSchema(z.object({
     firstName: z.string().min(2).max(50),
     lastName: z.string().min(2).max(50),
-    phoneNumber: z.string().min(2).max(50),
-    userType: z.string().min(2).max(50),
+    phoneNumber: z.string().min(10),
     email: z.string().min(2).max(50),
-    password: z.string().min(2).max(50),
-    confirmPassword: z.string().min(2).max(50),
 }))
 
 const form = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log('Form submitted!', values)
+const onSubmit = form.handleSubmit(async(values) => {
+    const data = {
+        ...values,
+        userType: 'merchant',
+        password: values.firstName + '@123',
+    };
+
+    registerLoading.value = true;
+
+    api.post('/auth/register', data)
+        .then((response) => {
+            console.log(response.data)
+        })
+        .catch((error) => {
+            registerError.value = error.response.data.message;
+        })
+        .finally(() => {
+            registerLoading.value = false;
+        })
 })
 
 </script>
 
 <template>
-    <Dialog :open="show" :onUpdate:open="onUpdateOpen">
-        <DialogContent class="max-w-[800px]">
+    <Dialog :open="show" :onUpdate:open="onUpdateOpen" :modal="true">
+        <DialogContent class="max-w-[700px]">
             <DialogHeader>
-                <DialogTitle>Merchant</DialogTitle>
+                <DialogTitle>Merchant's Account Information</DialogTitle>
             </DialogHeader>
 
-            <div>
-                <Slider
-                    :max="100" :step="1"
-                />
+            <div v-if="registerError">
+                <p class="text-red-600 text-sm font-semibold text-center">{{ registerError }}</p>
             </div>
-            
-            <form @submit="onSubmit" className="flex flex-col gap-y-5">
-                <div className="flex gap-x-5 w-full">
-                    <FormField v-slot="{ componentField }" name="firstName" className="flex-1">
-                        <FormItem>
-                            <div className="flex items-center gap-x-2">
-                                <FormLabel>First name</FormLabel>
-                                <FormMessage />
-                            </div>
+
+            <form @submit="onSubmit" class="flex flex-col gap-y-5">
+                <div class="flex gap-x-5 w-full">
+                    <FormField v-slot="{ componentField }" name="firstName">
+                        <FormItem class="flex-1">
+                            <FormLabel>First name</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="firstname" v-bind="componentField" />
+                                <Input type="text" placeholder="First name" v-bind="componentField"/>
                             </FormControl>
                         </FormItem>
                     </FormField>
 
-                    <FormField v-slot="{ componentField }" name="lastName" className="flex-1">
-                        <FormItem>
-                            <div className="flex items-center gap-x-2">
-                                <FormLabel>Last name</FormLabel>
-                                <FormMessage />
-                            </div>
+                    <FormField v-slot="{ componentField }" name="lastName" >
+                        <FormItem class="flex-1">
+                            <FormLabel>Last name</FormLabel>
                             <FormControl>
                                 <Input type="text" placeholder="Last name" v-bind="componentField" />
                             </FormControl>
@@ -87,55 +98,28 @@ const onSubmit = form.handleSubmit((values) => {
 
                 <FormField v-slot="{ componentField }" name="phoneNumber">
                     <FormItem>
-                        <div className="flex items-center gap-x-2">
-                            <FormLabel>Phone number</FormLabel>
-                            <FormMessage />
-                        </div>
+                        <FormLabel>Phone number</FormLabel>
                         <FormControl>
                             <Input type="text" placeholder="Phone number" v-bind="componentField" />
                         </FormControl>
+                        <FormMessage />
                     </FormItem>
                 </FormField>
 
                 <FormField v-slot="{ componentField }" name="email">
                     <FormItem>
-                        <div className="flex items-center gap-x-2">
-                            <FormLabel>Email</FormLabel>
-                            <FormMessage />
-                        </div>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
-                            <Input type="text" placeholder="email" v-bind="componentField" />
+                            <Input type="email" placeholder="email" v-bind="componentField" />
                         </FormControl>
                     </FormItem>
                 </FormField>
 
-                <FormField v-slot="{ componentField }" name="password">
-                    <FormItem>
-                        <div className="flex items-center gap-x-2">
-                            <FormLabel>Password</FormLabel>
-                            <FormMessage />
-                        </div>
-                        <FormControl>
-                            <Input type="password" placeholder="password" v-bind="componentField" />
-                        </FormControl>
-                    </FormItem>
-                </FormField>
-
-                <FormField v-slot="{ componentField }" name="confirmPassword">
-                    <FormItem>
-                        <div className="flex items-center gap-x-2">
-                            <FormLabel>Confirm password</FormLabel>
-                            <FormMessage />
-                        </div>
-                        <FormControl>
-                            <Input type="password" placeholder="Confirm password" v-bind="componentField" />
-                        </FormControl>
-                    </FormItem>
-                </FormField>
-
-                <Button type="submit">
-                    Register
-                </Button>
+                <div class="flex justify-end">
+                    <Button type="submit" class="w-fit font-semibold text-sm">
+                        {{ registerLoading ? 'Loading...' : 'Submit' }}
+                    </Button>
+                </div>
             </form>
         </DialogContent>
     </Dialog>

@@ -3,6 +3,7 @@ import Home from '@/views/Home.vue';
 import Register from '@/views/auth/Register.vue';
 import Login from '@/views/auth/Login.vue';
 import MerchantDashboard from '@/views/merchant/Dashboard.vue';
+import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
 import { getSession } from "@/utils/session.utils";
@@ -19,6 +20,11 @@ const router = createRouter({
             path: '/auth/register',
             name: 'register',
             component: Register,
+        },
+        {
+            path: '/auth/register/merchant',
+            name: 'merchant-registration',
+            component: MerchantRegistration,
         },
         {
             path: '/auth/login',

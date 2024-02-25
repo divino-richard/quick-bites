@@ -26,6 +26,8 @@ const handleAddUser = (user: UserType) => {
             break;
     }
 }
+
+
 </script>
 
 <template>
