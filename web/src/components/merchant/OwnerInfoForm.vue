@@ -13,12 +13,6 @@
     } from '../ui/form'
     import { Input } from '../ui/input'
 
-    interface Props {
-        onNext: () => void;
-    }
-
-    const props = defineProps<Props>();
-
     const formSchema = toTypedSchema(z.object({
         firstName: z.string().min(2).max(50),
         lastName: z.string().min(2).max(50),
@@ -33,7 +27,6 @@
     })
 
     const handleSubmit = form.handleSubmit((values) => {
-        props.onNext();
         console.log('Form submitted!', values)
     })
 </script>
@@ -79,26 +72,6 @@
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                         <Input type="text" placeholder="email" v-bind="componentField" />
-                    </FormControl>
-                    <FormMessage class="text-[10px]"/>
-                </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="password">
-                <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                        <Input type="password" placeholder="password" v-bind="componentField" />
-                    </FormControl>
-                    <FormMessage class="text-[10px]"/>
-                </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="confirmPassword">
-                <FormItem>
-                    <FormLabel>Confirm password</FormLabel>
-                    <FormControl>
-                        <Input type="password" placeholder="Confirm password" v-bind="componentField" />
                     </FormControl>
                     <FormMessage class="text-[10px]"/>
                 </FormItem>

@@ -76,3 +76,26 @@ export async function login(req: Request, res: Response) {
         console.log("Error: ", error)
     }
 }
+
+export async function merchantRegistration(req: Request, res: Response) {
+    try {
+        const saltRounds = 11;
+
+        const foundUser = await UserModel.findOne({email: req.body?.email})
+        if(foundUser) {
+            return res.status(400).json({
+                message: 'Acount already exists'
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(req.body?.password, saltRounds);
+        
+        // TODO
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Something went wrong. Please try again later."
+        })
+        console.log(error)
+    }
+}
