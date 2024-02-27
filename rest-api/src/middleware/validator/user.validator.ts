@@ -30,7 +30,7 @@ export const validateRegistration = [
             const isPasswordValid = passwordRegex.test(value)
 
             if(!isPasswordValid) {
-                throw new Error('Invalid Password')
+                throw new Error('Password must have atleast least 8 characters long, one digit, one lowercase letter, one uppercase letter, and one special characters !@#$%^&*()-_+=')
             }
             
             return true

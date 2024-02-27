@@ -33,6 +33,7 @@ const onSubmit = form.handleSubmit(async (data: Credentials) => {
             console.log(response)
             setSession(response.data)
             router.replace({path: '/admin'})
+            // TODO
         })
         .catch((error) => {
             loginErrorMessage.value = error.response.data.message;
