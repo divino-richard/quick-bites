@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../model/User"
 import {User, UserCredentials} from "../types/user.types";
+import { BusinessModel } from '../model/Business';
+import { BankAccountModel } from '../model/BankAccount';
 
 export async function register(req: Request, res: Response) {
     try {
@@ -90,8 +92,32 @@ export async function merchantRegistration(req: Request, res: Response) {
 
         const hashedPassword = await bcrypt.hash(req.body?.password, saltRounds);
         
-        // TODO
+        const createdUser = await UserModel.create({
+            firstName: req.body?.firstName,
+            lastName: req.body?.lastName,
+            email: req.body?.email,
+            phoneNumber: req.body?.phoneNumber,
+            userType: req.body?.userType,
+            password: hashedPassword
+        });
 
+        const createdBusiness = await BusinessModel.create({
+            userId: createdUser.id,
+            name: req.body?.businessName,
+            businessType: req.body?.businessType,
+            registrationNumber: req.body?.registrationNumber,
+            taxIdNumber: req.body?.taxIdNumber,
+            address: req.body?.businessAddress
+        })
+
+        const createdBankAccount = await BankAccountModel.create({
+            userId: createdUser.id,
+            bankName: req.body?.bankName,
+            holderName: req.body?.bankHolderName,
+            accountNumber: req.body?.bankAccountNumber,
+        })
+
+        // TODO
     } catch (error) {
         res.status(500).json({
             message: "Something went wrong. Please try again later."

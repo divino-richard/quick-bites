@@ -36,7 +36,8 @@ const formSchema = toTypedSchema(z.object({
     registrationNumber: z.number().min(10),
     businessAddress: z.string().min(2).max(50),
     bankName: z.string().min(2).max(50),
-    accountNumber: z.number().min(10),
+    bankHolderName: z.string().min(2).max(50),
+    bankAccountNumber: z.number().min(10),
     taxIdNumber: z.number().min(10),
     businessLicense: 
         z.custom<File>((file) => {
@@ -56,14 +57,14 @@ const formSchema = toTypedSchema(z.object({
         z.custom<File>((file) => {
             if(!file) return false
             else return true
-        }, 'Tax registration is required')
+        }, 'Business license is required')
         .transform((file) => file as File)
         .refine(
-            (file) => file?.size <= 700000, 
+            (file) => file?.size <= 700000,
             'File size should be less than or equal to 700KB.'
         )
         .refine(
-            (file) => ACCEPTED_DOCS_TYPES.includes(file?.type), 
+            (file) => ACCEPTED_DOCS_TYPES.includes(file?.type),
             'Only these types are allowed: .pdf, .doc, .docx'
         ),
     ownerIdPicture:
@@ -223,6 +224,16 @@ const handleSubmit = form.handleSubmit((values) => {
                                 <FormMessage class="text-[10px]"/>
                             </FormItem>
                         </FormField>
+                        
+                        <FormField v-slot="{ componentField }" name="taxIdNumber">
+                            <FormItem>
+                                <FormLabel>TIN</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="Tax ID Number" v-bind="componentField" />
+                                </FormControl>
+                                <FormMessage class="text-[10px]"/>
+                            </FormItem>
+                        </FormField>
         
                         <FormField v-slot="{ componentField }" name="businessAddress">
                             <FormItem>
@@ -250,9 +261,9 @@ const handleSubmit = form.handleSubmit((values) => {
                             </FormItem>
                         </FormField>
 
-                        <FormField v-slot="{ componentField }" name="holderName">
+                        <FormField v-slot="{ componentField }" name="bankHolderName">
                             <FormItem>
-                                <FormLabel>Holder name</FormLabel>
+                                <FormLabel>Bank holder name</FormLabel>
                                 <FormControl>
                                     <Input type="text" placeholder="Holder name" v-bind="componentField" />
                                 </FormControl>
@@ -260,21 +271,11 @@ const handleSubmit = form.handleSubmit((values) => {
                             </FormItem>
                         </FormField>
     
-                        <FormField v-slot="{ componentField }" name="accountNumber">
+                        <FormField v-slot="{ componentField }" name="bankAccountNumber">
                             <FormItem>
                                 <FormLabel>Account number</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="Account number" v-bind="componentField" />
-                                </FormControl>
-                                <FormMessage class="text-[10px]"/>
-                            </FormItem>
-                        </FormField>
-    
-                        <FormField v-slot="{ componentField }" name="taxIdNumber">
-                            <FormItem>
-                                <FormLabel>TIN</FormLabel>
-                                <FormControl>
-                                    <Input type="number" placeholder="Tax ID Number" v-bind="componentField" />
                                 </FormControl>
                                 <FormMessage class="text-[10px]"/>
                             </FormItem>
@@ -294,21 +295,21 @@ const handleSubmit = form.handleSubmit((values) => {
                             </FormItem>
                         </FormField>
 
-                        <FormField v-slot="{ componentField }" name="taxRegistration">
+                        <FormField v-slot="{ handleChange }" name="taxRegistration">
                             <FormItem>
                                 <FormLabel>Tax registration</FormLabel>
                                 <FormControl>
-                                    <Input type="file" placeholder="Tax registration" v-bind="componentField" />
+                                    <Input type="file" placeholder="Tax registration" @change="handleChange" />
                                 </FormControl>
                                 <FormMessage class="text-[10px]"/>
                             </FormItem>
                         </FormField>
 
-                        <FormField v-slot="{ componentField }" name="ownerIdPicture">
+                        <FormField v-slot="{ handleChange }" name="ownerIdPicture">
                             <FormItem>
                                 <FormLabel>Owner ID</FormLabel>
                                 <FormControl>
-                                    <Input type="file" placeholder="Owner ID" v-bind="componentField" />
+                                    <Input type="file" placeholder="Owner ID" @change="handleChange" />
                                 </FormControl>
                                 <FormMessage class="text-[10px]"/>
                             </FormItem>
