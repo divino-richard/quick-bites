@@ -8,6 +8,21 @@ import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
 import { getSession } from "@/utils/session.utils";
 
+const checkRegistration = () => {
+    const session = getSession();
+    if(!session) return false;
+
+    const { userType, registration } = session?.userData;
+
+    if(registration !== 'completed') {
+        switch (userType) {
+            case 'merchant':
+                router.push('/merchant/registration/completion')
+                break;
+        }
+    }
+}
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -53,7 +68,8 @@ const router = createRouter({
             component: MerchantDashboard,
             meta: {
                 authorize: ['merchant']
-            }
+            },
+            beforeEnter: checkRegistration
         },
     ],
 })

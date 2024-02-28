@@ -13,7 +13,7 @@ api.interceptors.request.use(
             config.headers['Authorization'] = `Bearer ${session?.token}`
         }
         
-        config.baseURL = "http://localhost:5000";
+        config.baseURL = "http://localhost:5100";
         config.timeout = 10000;
         config.headers["Content-Type"] = "application/json";
 

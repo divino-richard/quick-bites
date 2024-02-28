@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ref } from 'vue';
 import api from '../../utils/api';
-import { Credentials } from '../../types/user.types';
+import { Credentials, UserSession } from '../../types/user.types';
 import router from '@/router';
 import { setSession } from '@/utils/session.utils';
 
@@ -30,10 +30,25 @@ const onSubmit = form.handleSubmit(async (data: Credentials) => {
     loginLoading.value = true;
     await api.post('/auth/login', data)
         .then((response) => {
-            console.log(response)
-            setSession(response.data)
-            router.replace({path: '/admin'})
-            // TODO
+            const session: UserSession = response.data;
+            setSession(session);
+
+            const { userType } = session.userData;
+            
+            switch(userType) {
+                case 'admin':
+                    router.replace({path: '/admin'});
+                    break;
+                case 'merchant':
+                    router.replace({path: '/merchant'});
+                    break;
+                case 'rider': 
+                    router.replace({path: '/rider'});
+                    break;
+                case 'customer':
+                    router.replace({path: '/'});
+                    break;
+            }
         })
         .catch((error) => {
             loginErrorMessage.value = error.response.data.message;
