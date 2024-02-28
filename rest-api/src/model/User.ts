@@ -7,11 +7,13 @@ const UserType = {
     message: "Invalid user type"
 };
 
+const RegistrationStatus = {
+    values: ['initial', 'completed', 'approved', 'denied'],
+    message: 'Invalid registration type',
+}
+
 const userSchema = new Schema({
-    firstName: {
-        type: String,
-        required: [true, "Frist name is required"],
-    },
+    firstName: String,
     lastName: String,
     phoneNumber: String,
     userType: {
@@ -20,6 +22,10 @@ const userSchema = new Schema({
     },
     email: String,
     password: String,
+    registrationStatus: {
+        type: String,
+        enum: RegistrationStatus,
+    }
 }, {
     timestamps: true
 });

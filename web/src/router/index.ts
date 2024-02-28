@@ -6,22 +6,8 @@ import MerchantDashboard from '@/views/merchant/Dashboard.vue';
 import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
-import { getSession } from "@/utils/session.utils";
-
-const checkRegistration = () => {
-    const session = getSession();
-    if(!session) return false;
-
-    const { userType, registration } = session?.userData;
-
-    if(registration !== 'completed') {
-        switch (userType) {
-            case 'merchant':
-                router.push('/merchant/registration/completion')
-                break;
-        }
-    }
-}
+import RegistrationCompletion from "@/views/merchant/RegistrationCompletion.vue";
+import { checkRegistration } from "@/utils/user.utils";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -71,25 +57,12 @@ const router = createRouter({
             },
             beforeEnter: checkRegistration
         },
-    ],
-})
-
-router.beforeEach((to, from, next) => {
-    const authorize = to.meta.authorize as string[];
-
-    if(authorize) {
-        const session = getSession();
-        if(!session || !authorize.includes(session.userData.userType)) {
-            return next({
-                path: '/auth/login', 
-                query: { 
-                    returnUrl: to.path 
-                }
-            })
+        {
+            path: '/merchant/registration/completion',
+            name: 'merchant-registration-completion',
+            component: RegistrationCompletion
         }
-    }
-
-    next();
+    ],
 })
 
 export default router

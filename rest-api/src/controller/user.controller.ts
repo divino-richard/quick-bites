@@ -20,7 +20,8 @@ export async function register(req: Request, res: Response) {
 
         const createdUser = await UserModel.create({
             ...body, 
-            password: hashedPassword
+            password: hashedPassword,
+            registrationStatus: 'initial'
         });
         const responseData = createdUser.toObject({virtuals: true});
 
