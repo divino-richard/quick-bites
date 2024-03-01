@@ -65,7 +65,7 @@ export async function login(req: Request, res: Response) {
         jwt.sign(
             userData, 
             process.env.JWT_PRIVATE_KEY, 
-            { algorithm: 'HS256' }, 
+            { algorithm: 'HS256', expiresIn: '1h' }, 
             function(error, token) {
                 if(error) throw new Error('JWT sign error');
                 

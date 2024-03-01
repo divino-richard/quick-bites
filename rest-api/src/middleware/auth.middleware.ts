@@ -1,28 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from 'jsonwebtoken';
 
-export const authorize = (allowedRole: string[]) => {
+export const authorize = (authorizedUser: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        if(!req.headers.authorization) {
-            return res.status(401).send('Unauthorized');
+        if(!req.userData) {
+            throw new Error('Empty user data');
         }
-        const token = req.headers.authorization.split(" ")[1];
-        if(!token) {
-            return res.status(401).send('Unauthorized');
+
+        const userType  = req.userData?.userType;
+
+        if(!authorizedUser.includes(userType)) {
+            return res.status(403).send('Forbidden');
         }
-        console.log(process.env.JWT_PRIVATE_KEY)
 
-        if(!process.env.JWT_PRIVATE_KEY) {
-            throw new Error('Failed to get jwt private key')
-        }
-        jwt.verify(token, process.env.JWT_PRIVATE_KEY, (error, payload) => {
-            if(error) {
-                return res.status(401).send('Unauthorized');
-            }
-
-            console.log(payload)
-        })
-
-        next()
+        next();
     }
 }

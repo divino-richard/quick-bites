@@ -7,11 +7,11 @@ const bankAccountSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
-    bankName: String,
+    name: String,
     holderName: String,
     accountNumber: String,
 }, {
     timestamps: true
 })
 
-export const BankAccountModel = mongoose.model('Finance', bankAccountSchema);
+export const BankAccountModel = mongoose.model('BankAccount', bankAccountSchema);
