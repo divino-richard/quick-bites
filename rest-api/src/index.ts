@@ -10,6 +10,7 @@ import { User } from './types/user.types';
 import mainRouter from './routes/main.route';
 import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
+import expressValidator from 'express-validator';
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// TODO - create custom file validator for merchant documents
+// app.use(expressValidator({customElements:}))
 
 declare module 'Express' {
     interface Request {

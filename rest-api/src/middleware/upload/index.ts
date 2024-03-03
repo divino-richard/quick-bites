@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { ROOT_DIRECTORY } from '../../../_dirname';
 
-const storage = multer.diskStorage({
+export const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, `${ROOT_DIRECTORY}/src/uploads/`);
     },
@@ -13,4 +13,3 @@ const storage = multer.diskStorage({
         cb(null, newFileName);
     }
 })
-export const upload = multer({ storage: storage });

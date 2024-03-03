@@ -1,30 +1,60 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import { validateRegistrationCompletion } from '../middleware/validator/mechant.validator';
+import { addBusinessLicense, addTaxRegistration, completeRegistration } from '../controller/merchant.controller';
+import multer from 'multer';
 import { validationResult } from 'express-validator';
-import { upload } from '../middleware/upload';
-import fs from 'fs';
-import { BusinessModel } from '../model/Business';
-import { BankAccountModel } from '../model/BankAccount';
-import { DocumentFilesModel } from '../model/DocumentFiles';
-import { ROOT_DIRECTORY } from '../../_dirname';
-import { completeRegistration } from '../controller/merchant.controller';
+import { businessLicenseUpload, taxRegistrationUpload } from '../utils/fileUpload.utils';
 
 const merchantRoute = express.Router();
 
 merchantRoute.post(
     '/registration/completion', 
-    upload.fields([
-        { name: 'businessLicense', maxCount: 1 },
-        { name: 'taxRegistration', maxCount: 1 },
-        { name: 'onwerIdentification', maxCount: 1 },
-    ]),
     validateRegistrationCompletion,
     async (req: Request, res: Response) => {
-        if(!req.body || !req.files) {
-            return res.status(400).json({message: 'Invalid data provided'});
+        const validatorErrors = validationResult(req);
+        if (!validatorErrors.isEmpty()) {
+            return res.status(422).json({ message: validatorErrors.array()[0].msg});
         }
 
         completeRegistration(req, res);
+    }
+);
+
+merchantRoute.post(
+    '/business-license', 
+    (req: Request, res: Response) => {
+        businessLicenseUpload(req, res, function (error) {
+            if (error instanceof multer.MulterError) {
+                return res.status(402).json({message: error.message})
+            } else if (error instanceof Error) {
+                return res.status(402).json({message: error.message})
+            }  
+            
+            if(!req.file) {
+                return res.status(402).json({message: "No file exist"})
+            }
+        
+            addBusinessLicense(req, res);
+        })
+    }
+);
+
+merchantRoute.post(
+    '/tax-registration', 
+    (req: Request, res: Response) => {
+        taxRegistrationUpload(req, res, function (error) {
+            if (error instanceof multer.MulterError) {
+                return res.status(402).json({message: error.message})
+            } else if (error instanceof Error) {
+                return res.status(402).json({message: error.message})
+            }            
+            
+            if(!req.file) {
+                return res.status(402).json({message: "No file exist"})
+            }
+
+            addTaxRegistration(req, res);
+        })
     }
 );
 

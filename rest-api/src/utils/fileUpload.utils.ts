@@ -1,21 +1,47 @@
 import fs from 'fs';
+import multer from 'multer';
+import { storage } from '../middleware/upload';
+import { isValidObjectId } from 'mongoose';
 
-export function deleteMerchantDocuments(files: {[fieldname: string]: Express.Multer.File[]}) {
-    fs.unlink(files['businessLicense'][0].path, (error) => {
-        if(error) {
-            console.log('Business license deletion error: ', error);
-        }
-    });
+export const businessLicenseUpload = multer({
+    storage, 
+    fileFilter: (req, file, callback) => {
+        const acceptedFileType = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 
-    fs.unlink(files['taxRegistration'][0].path, (error) => {
-        if(error) {
-            console.log('Tax Registration deletion error: ', error);
+        if(!req.body?.businessId || !isValidObjectId(req.body?.businessId)) {
+            callback(new Error('Invalid business id'));
+            return;
         }
-    });
 
-    fs.unlink(files['onwerIdentification'][0].path, (error) => {
-        if(error) {
-            console.log('Owner ID deletion error: ', error);
+        if(!acceptedFileType.includes(file.mimetype)) {
+            callback(new Error('File type should be in .pdf, .doc, or .docx format'));
+            return;
         }
-    });
-}
+
+        callback(null, true);
+    }, 
+    limits: {
+        fileSize: 500000
+    },
+}).single('businessLicense');
+
+export const taxRegistrationUpload = multer({
+    storage, 
+    fileFilter: (req, file, callback) => {
+        const acceptedFileType = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+        if(!req.body?.businessId || !isValidObjectId(req.body?.businessId)) {
+            callback(new Error('Invalid business id'));
+            return;
+        }
+
+        if(!acceptedFileType.includes(file.mimetype)) {
+            callback(new Error('File type should be in .pdf, .doc, or .docx format'));
+            return;
+        }
+
+        callback(null, true);
+    }, 
+    limits: {
+        fileSize: 500000
+    },
+}).single('taxRegistration');
