@@ -11,6 +11,7 @@ import mainRouter from './routes/main.route';
 import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
 import expressValidator from 'express-validator';
+import userRouter from './routes/user.router';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/auth", authRouter);
 app.use('/api', mainRouter);
 
 mainRouter.use('/merchant', authorize(['merchant']), merchantRoute);
+mainRouter.use('/user', authorize(['merchant', 'rider', 'customer']), userRouter);
 
 dbConnect();
 
