@@ -7,5 +7,9 @@ export function getSession (): UserSession | null {
 }
 
 export function setSession(session: UserSession) {
-    localStorage.setItem('user-session', JSON.stringify(session))
+    localStorage.setItem('user-session', JSON.stringify(session));
+}
+
+export function logout() {
+    localStorage.setItem('user-session', '');
 }
