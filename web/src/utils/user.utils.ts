@@ -12,7 +12,7 @@ export const checkRegistration = () => {
     if(registration !== 'completed') {
         switch (userType) {
             case 'merchant':
-                router.push('/merchant/registration/completion')
+                router.push('/merchant/create-business')
                 break;
         }
     }
