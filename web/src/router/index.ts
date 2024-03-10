@@ -55,7 +55,7 @@ const router = createRouter({
             meta: {
                 authorize: ['merchant']
             },
-            beforeEnter: checkRegistration
+            // beforeEnter: checkRegistration
         },
         {
             path: '/merchant/create-business',

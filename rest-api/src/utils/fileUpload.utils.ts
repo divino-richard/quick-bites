@@ -1,4 +1,3 @@
-import fs from 'fs';
 import multer from 'multer';
 import { storage } from '../middleware/upload';
 import { isValidObjectId } from 'mongoose';
@@ -45,3 +44,28 @@ export const taxRegistrationUpload = multer({
         fileSize: 500000
     },
 }).single('taxRegistration');
+
+export const userValidId = multer({
+    storage,
+    fileFilter: (req, file, callback) => {
+        const acceptedFileType = ['image/png', 'image/jpg', 'image/jpeg'];
+        
+        if(!req.body?.idType) {
+            callback(new Error('Id type is required'));
+            return;
+        }
+
+        if(!acceptedFileType.includes(file.mimetype)) {
+            callback(new Error('File type should be in .png, .jpg, or .jpeg'));
+            return;
+        }
+
+        callback(null, true);
+    },
+    limits: {
+        fieldSize: 70000,
+    },
+}).fields([
+    { name: 'front-id', maxCount: 1}, 
+    { name: 'back-id', maxCount: 1 }
+]);

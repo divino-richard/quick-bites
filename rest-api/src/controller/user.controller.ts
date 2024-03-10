@@ -5,6 +5,7 @@ import { UserModel } from "../model/User"
 import {User, UserCredentials} from "../types/user.types";
 import { BusinessModel } from '../model/Business';
 import { BankAccountModel } from '../model/BankAccount';
+import { ValidId } from '../model/ValidId';
 
 export async function register(req: Request, res: Response) {
     try {
@@ -80,49 +81,38 @@ export async function login(req: Request, res: Response) {
     }
 }
 
-export async function merchantRegistration(req: Request, res: Response) {
+export async function addUserValidId(req: Request, res: Response) {
     try {
-        const saltRounds = 11;
+        const files = req.files as {[fieldname: string]: Express.Multer.File[];}
+        const frontId = files['front-id'][0];
+        const backId = files['back-id'][0];
 
-        const foundUser = await UserModel.findOne({email: req.body?.email})
-        if(foundUser) {
-            return res.status(400).json({
-                message: 'Acount already exists'
-            })
-        }
-
-        const hashedPassword = await bcrypt.hash(req.body?.password, saltRounds);
-        
-        const createdUser = await UserModel.create({
-            firstName: req.body?.firstName,
-            lastName: req.body?.lastName,
-            email: req.body?.email,
-            phoneNumber: req.body?.phoneNumber,
-            userType: req.body?.userType,
-            password: hashedPassword
+        const createdFrontId = await ValidId.create({
+            userId: req.userData?.id,
+            filename: frontId.filename,
+            uri: `${process.env.BASE_URL}/uploads/${frontId.filename}`,
+            idSide: 'front',
+            idType: req.body?.idType,
+            status: 'idle',
         });
 
-        const createdBusiness = await BusinessModel.create({
-            userId: createdUser.id,
-            name: req.body?.businessName,
-            businessType: req.body?.businessType,
-            registrationNumber: req.body?.registrationNumber,
-            taxIdNumber: req.body?.taxIdNumber,
-            address: req.body?.businessAddress
+        const createdBackId = await ValidId.create({
+            userId: req.userData?.id,
+            filename: backId.filename,
+            uri: `${process.env.BASE_URL}/uploads/${backId.filename}`,
+            idSide: 'back',
+            idType: req.body?.idType,
+            status: 'idle',
         })
 
-        const createdBankAccount = await BankAccountModel.create({
-            userId: createdUser.id,
-            bankName: req.body?.bankName,
-            holderName: req.body?.bankHolderName,
-            accountNumber: req.body?.bankAccountNumber,
+        res.status(201).json({
+            createdFrontId,
+            createdBackId
         })
-
-        // TODO
     } catch (error) {
-        res.status(500).json({
-            message: "Something went wrong. Please try again later."
-        })
         console.log(error)
+        res.status(500).json({
+            message: 'Something went wrong. Please try again later.'
+        })
     }
 }

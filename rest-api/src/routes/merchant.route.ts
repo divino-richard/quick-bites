@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { validateRegistrationCompletion } from '../middleware/validator/mechant.validator';
-import { addBusinessLicense, addTaxRegistration, completeRegistration } from '../controller/merchant.controller';
+import { addBusinessLicense, addTaxRegistration, completeRegistration, getBusiness } from '../controller/merchant.controller';
 import multer from 'multer';
 import { validationResult } from 'express-validator';
 import { businessLicenseUpload, taxRegistrationUpload } from '../utils/fileUpload.utils';
@@ -38,6 +38,10 @@ merchantRoute.post(
         })
     }
 );
+
+merchantRoute.get('/business', (req: Request, res: Response) => {
+    getBusiness(req, res);
+});
 
 merchantRoute.post(
     '/tax-registration', 

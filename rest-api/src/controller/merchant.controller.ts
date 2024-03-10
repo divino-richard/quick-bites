@@ -76,8 +76,20 @@ export async function addTaxRegistration(req: Request, res: Response) {
         })
         res.status(201).json(createdTaxRegistration)
     } catch (error) {
-        res.status(400).json({
+        res.status(500).json({
             message: "Something went wrong, Please try again later."
+        })
+    }
+}
+
+export async function getBusiness(req: Request, res: Response) { 
+    try {
+        const userId = req.userData?.id;
+        const business = await BusinessModel.findOne({userId});
+        res.status(200).json(business);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Something went wrong. Please try again later'
         })
     }
 }
