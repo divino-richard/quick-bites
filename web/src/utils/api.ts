@@ -2,6 +2,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useRouter } from 'vue-router';
 import { getSession } from './session.utils';
+import { useStore } from '@/store';
 
 const api = axios.create();
 
@@ -30,10 +31,10 @@ api.interceptors.response.use(
     },
     (error: AxiosError) => {
         const router = useRouter();
+        const store = useStore();
 
         if (error.code === 'ERR_NETWORK') {
-            // TODO: Set network error from the global state
-            console.log(error.code)
+            store.commit('setNetworkError', 'Network connection error');
         }
 
         const statusCode = error.response?.status

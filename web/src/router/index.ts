@@ -3,6 +3,7 @@ import Home from '@/views/Home.vue';
 import Register from '@/views/auth/Register.vue';
 import Login from '@/views/auth/Login.vue';
 import MerchantDashboard from '@/views/merchant/Dashboard.vue';
+import MerchantLayout from '@/views/merchant/Layout.vue';
 import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
@@ -50,12 +51,19 @@ const router = createRouter({
         },
         {   
             path: '/merchant',
-            name: 'merchant-dashboard',
-            component: MerchantDashboard,
+            name: "merchant-layout",
+            component: MerchantLayout,
             meta: {
                 authorize: ['merchant']
             },
             // beforeEnter: checkRegistration
+            children: [
+                {
+                    path: "",
+                    name: 'merchant-dashboard',
+                    component: MerchantDashboard,
+                }
+            ],
         },
         {
             path: '/merchant/registration/completion',

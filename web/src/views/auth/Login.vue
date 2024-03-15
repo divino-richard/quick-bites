@@ -8,14 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ref } from 'vue';
-import api from '../../utils/api';
-import { Credentials, UserSession } from '../../types/user.types';
-import router from '@/router';
-import { setSession } from '@/utils/session.utils';
+import { Credentials } from '../../types/user.types';
+import { useStore } from '@/store';
+
+const store = useStore();
 
 let showPassword = ref(false);
-let loginLoading = ref(false);
-let loginErrorMessage = ref("");
 
 const formSchema = toTypedSchema(z.object({
     email: z.string().min(2),
@@ -27,34 +25,7 @@ const form = useForm({
 })
 
 const onSubmit = form.handleSubmit(async (data: Credentials) => {
-    loginLoading.value = true;
-    await api.post('/auth/login', data)
-        .then((response) => {
-            const session: UserSession = response.data;
-            setSession(session);
-
-            const { userType } = session.userData;
-            
-            switch(userType) {
-                case 'admin':
-                    router.replace({path: '/admin'});
-                    break;
-                case 'merchant':
-                    router.replace({path: '/merchant'});
-                    break;
-                case 'rider': 
-                    router.replace({path: '/rider'});
-                    break;
-                case 'customer':
-                    router.replace({path: '/'});
-                    break;
-            }
-        })
-        .catch((error) => {
-            loginErrorMessage.value = error.response.data.message;
-        }).finally(() => {
-            loginLoading.value = false;
-        })
+    store.dispatch('login', data);
 });
 
 const togglePassword = (checked: boolean) => {
@@ -67,7 +38,12 @@ const togglePassword = (checked: boolean) => {
         <form @submit="onSubmit" className="flex flex-col w-full max-w-[400px] gap-y-5">
             <h1 className="text-lg font-bold">Log In</h1>
             
-            <p v-if="loginErrorMessage" className="text-red-500 font-semibold text-sm text-center">{{loginErrorMessage}}</p> 
+            <p 
+                v-if="store.state.loginError" 
+                className="text-red-500 font-semibold text-sm text-center"
+            >
+                {{store.state.loginError}}
+            </p>
 
             <FormField v-slot="{componentField}" name="email">
                 <FormItem>
@@ -97,8 +73,8 @@ const togglePassword = (checked: boolean) => {
                 </label>
             </div>
 
-            <Button type="submit" :disabled="loginLoading">
-                {{loginLoading ? 'Loading...' : 'Login'}}
+            <Button type="submit" :disabled="store.state.loginLoading">
+                {{store.state.loginLoading ? 'Loading...' : 'Login'}}
             </Button>
         </form>
     </div>

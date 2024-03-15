@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Button from "@/components/ui/button/Button.vue";
 import DropdownMenu from "@/components/ui/dropdown-menu/DropdownMenu.vue";
 import DropdownMenuContent from "@/components/ui/dropdown-menu/DropdownMenuContent.vue";
@@ -7,23 +7,22 @@ import DropdownMenuItem from "@/components/ui/dropdown-menu/DropdownMenuItem.vue
 import DropdownMenuLabel from "@/components/ui/dropdown-menu/DropdownMenuLabel.vue";
 import DropdownMenuSeparator from "@/components/ui/dropdown-menu/DropdownMenuSeparator.vue";
 import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigger.vue";
-import router from "@/router";
-import { getSession, logout } from "@/utils/session.utils";
+import { useStore } from "@/store";
 
-const session = getSession();
-const userData = session?.userData;
+const store = useStore();
 </script>
 
 <template>
   <div className="flex justify-between items-center p-5">
     <h1 className="font-semibold text-sm">Quick Bites</h1>
 
-    <div v-if="userData">
+    <div v-if="session">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
-            <AvatarImage src="https://github.com/radix-vue.png" alt="@radix-vue" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>
+              {{ session.userData.firstName[0].toUpperCase() + session.userData.lastName[0].toUpperCase() }}
+            </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-[200px] mr-2">
@@ -34,12 +33,7 @@ const userData = session?.userData;
             <Button
               variant="outline"
               class="w-full"
-              @click="
-                () => {
-                  logout();
-                  router.push('/auth/login');
-                }
-              "
+              @click="store.commit('logOut')"
               >Logout</Button
             >
           </DropdownMenuItem>

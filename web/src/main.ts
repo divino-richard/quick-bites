@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from './router'
+import { store, key } from './store';
 import { getSession } from './utils/session.utils'
 
 const app = createApp(App)
@@ -22,6 +23,6 @@ router.beforeEach((to, from, next) => {
     }
     next();
 })
-
-app.use(router)
+app.use(store, key);
+app.use(router);
 app.mount('#app');

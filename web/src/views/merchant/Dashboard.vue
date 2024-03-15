@@ -26,18 +26,17 @@ const fetchBusiness = async () => {
   }
 };
 
-if (!business) {
-  router.push("/merchant/registration/completion");
-}
+// if (!business) {
+//   router.push("/merchant/registration/completion");
+// }
 
-onMounted(() => {
-  fetchBusiness();
-});
+// onMounted(() => {
+//   fetchBusiness();
+// });
 </script>
 
 <template>
   <div>
     <h1>Merchant Dashboard</h1>
-    <p>{{ JSON.stringify(business) }}</p>
   </div>
 </template>
