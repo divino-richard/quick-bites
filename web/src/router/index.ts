@@ -7,7 +7,7 @@ import MerchantLayout from '@/views/merchant/Layout.vue';
 import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
-import RegistrationCompletion from "@/views/merchant/RegistrationCompletion.vue";
+import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
 import { checkRegistration } from "@/utils/user.utils";
 
 const router = createRouter({
@@ -66,9 +66,9 @@ const router = createRouter({
             ],
         },
         {
-            path: '/merchant/registration/completion',
-            name: 'merchant-registration-completion',
-            component: RegistrationCompletion
+            path: '/merchant/create-business',
+            name: 'merchant-create-business',
+            component: CreateBusiness
         }
     ],
 })
