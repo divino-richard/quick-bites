@@ -10,18 +10,22 @@ import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigg
 import { useStore } from "@/store";
 
 const store = useStore();
+const { auth } = store.state;
 </script>
 
 <template>
   <div className="flex justify-between items-center p-5">
     <h1 className="font-semibold text-sm">Quick Bites</h1>
 
-    <div v-if="session">
+    <div v-if="auth.session">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
             <AvatarFallback>
-              {{ session.userData.firstName[0].toUpperCase() + session.userData.lastName[0].toUpperCase() }}
+              {{
+                auth.session.userData.firstName[0].toUpperCase() +
+                auth.session.userData.lastName[0].toUpperCase()
+              }}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -30,10 +34,7 @@ const store = useStore();
           <DropdownMenuSeparator />
           <DropdownMenuItem>Dashboard</DropdownMenuItem>
           <DropdownMenuItem>
-            <Button
-              variant="outline"
-              class="w-full"
-              @click="store.commit('logOut')"
+            <Button variant="outline" class="w-full" @click="store.commit('logOut')"
               >Logout</Button
             >
           </DropdownMenuItem>

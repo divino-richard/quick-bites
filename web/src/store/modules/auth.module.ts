@@ -3,6 +3,7 @@ import { loginUser } from '@/services/auth.service';
 import { AxiosError } from 'axios';
 import { Module } from 'vuex';
 import { RootState } from '@/store';
+import api from '@/utils/api';
 
 export interface AuthState {
     session: UserSession | null;
@@ -12,19 +13,22 @@ export interface AuthState {
 }
 
 const authModule: Module<AuthState, RootState> = {
+    namespaced: true,
     state: {
         session: null,
         loginLoading: false,
         loginError: '',
-        networkError: '',
-    },
+    } as AuthState,
     mutations: {
         setSession (state, session: UserSession) {
             state.session = session;
             localStorage.setItem('user-session', JSON.stringify(session));
         },
-        setNetworkError (state, errorMessage: string) {
-            state.networkError = errorMessage;
+        setLoginError (state, errorMessage: string) {
+            state.loginError = errorMessage
+        },
+        setLoginLoading (state, loading: boolean) {
+            state.loginLoading = loading;
         },
         logOut (state) {
             localStorage.setItem('user-session', '');
@@ -33,18 +37,18 @@ const authModule: Module<AuthState, RootState> = {
     },
     actions: {
         login: async({ state, commit}, credentials: Credentials) => {
-            state.loginLoading = true;
+            commit('setLoginLoading', true);
             try {
-                const response = await loginUser(credentials);
+                const response = await api.post('/auth/login', credentials);
                 commit('setSession', response.data);
             } catch (error) {
                 if(error instanceof AxiosError) {
-                    state.loginError = error.response?.data.message;
+                    commit('setLoginError', error.response?.data.message);
                     return;
                 }
                 state.loginError = 'Something went wrong!';
             } finally {
-                state.loginLoading = false;
+                // commit('setLoginLoading', false);
             }
         }
     },
@@ -53,6 +57,9 @@ const authModule: Module<AuthState, RootState> = {
             const session = localStorage.getItem('user-session');
             if(!session) return null;
             return JSON.parse(session);
+        },
+        getLoginLoading: (state): boolean => {
+            return state.loginLoading;
         }
     }
 };
