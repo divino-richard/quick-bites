@@ -8,23 +8,24 @@ import DropdownMenuLabel from "@/components/ui/dropdown-menu/DropdownMenuLabel.v
 import DropdownMenuSeparator from "@/components/ui/dropdown-menu/DropdownMenuSeparator.vue";
 import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigger.vue";
 import { useStore } from "@/store";
+import { computed } from "vue";
 
 const store = useStore();
-const { auth } = store.state;
+const session = computed(() => store.getters["auth/getSession"]);
 </script>
 
 <template>
   <div className="flex justify-between items-center p-5">
     <h1 className="font-semibold text-sm">Quick Bites</h1>
 
-    <div v-if="auth.session">
+    <div v-if="session">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
             <AvatarFallback>
               {{
-                auth.session.userData.firstName[0].toUpperCase() +
-                auth.session.userData.lastName[0].toUpperCase()
+                session.userData.firstName[0].toUpperCase() +
+                session.userData.lastName[0].toUpperCase()
               }}
             </AvatarFallback>
           </Avatar>
@@ -34,7 +35,7 @@ const { auth } = store.state;
           <DropdownMenuSeparator />
           <DropdownMenuItem>Dashboard</DropdownMenuItem>
           <DropdownMenuItem>
-            <Button variant="outline" class="w-full" @click="store.commit('logOut')"
+            <Button variant="outline" class="w-full" @click="store.commit('auth/logOut')"
               >Logout</Button
             >
           </DropdownMenuItem>

@@ -6,15 +6,14 @@ import { FormField, FormLabel, FormControl, FormItem } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Credentials } from "../../types/user.types";
-import { mapState } from "vuex";
 import { useStore } from "@/store";
 
 const store = useStore();
-const loginLoading = store.getters["auth/getLoginLoading"];
 
-console.log("LOading", loginLoading);
+const loginLoading = computed(() => store.state.auth.loginLoading);
+const loginError = computed(() => store.state.auth.loginError);
 
 let showPassword = ref(false);
 const formSchema = toTypedSchema(
@@ -42,9 +41,9 @@ const togglePassword = (checked: boolean) => {
     <form @submit="onSubmit" className="flex flex-col w-full max-w-[400px] gap-y-5">
       <h1 className="text-lg font-bold">Log In</h1>
 
-      <!-- <p v-if="loginError" className="text-red-500 font-semibold text-sm text-center">
+      <p v-if="loginError" className="text-red-500 font-semibold text-sm text-center">
         {{ loginError }}
-      </p> -->
+      </p>
 
       <FormField v-slot="{ componentField }" name="email">
         <FormItem>
