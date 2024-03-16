@@ -7,13 +7,34 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ref, computed } from "vue";
-import { Credentials } from "../../types/user.types";
+import { Credentials, UserSession } from "../../types/user.types";
 import { useStore } from "@/store";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
 
 const loginLoading = computed(() => store.state.auth.loginLoading);
 const loginError = computed(() => store.state.auth.loginError);
+const session = computed(() => store.getters["auth/getSession"]);
+
+if (session.value) {
+  const userSession: UserSession = session.value;
+  switch (userSession.userData.userType) {
+    case "admin":
+      router.push("/admin");
+      break;
+    case "merchant":
+      router.push("/merchant");
+      break;
+    case "rider":
+      router.push("/rider");
+      break;
+    case "customer":
+      router.push("/");
+      break;
+  }
+}
 
 let showPassword = ref(false);
 const formSchema = toTypedSchema(
