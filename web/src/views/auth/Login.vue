@@ -16,7 +16,7 @@ const router = useRouter();
 
 const loginLoading = computed(() => store.state.auth.loginLoading);
 const loginError = computed(() => store.state.auth.loginError);
-const session = computed(() => store.getters["auth/getSession"]);
+const session = computed(() => store.state.auth.session);
 
 if (session.value) {
   const userSession: UserSession = session.value;

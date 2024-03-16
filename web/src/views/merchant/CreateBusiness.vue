@@ -21,8 +21,12 @@ import api from "@/utils/api";
 import { toTypedSchema } from "@vee-validate/zod";
 import { AxiosError } from "axios";
 import { useForm } from "vee-validate";
+import { ArrowLeftIcon } from "lucide-vue-next";
 import { ref } from "vue";
 import * as z from "zod";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const submitLoading = ref(false);
 const submitError = ref("");
@@ -70,6 +74,14 @@ const onSubmit = form.handleSubmit(async (data) => {
 
 <template>
   <div class="p-5">
+    <Button
+      variant="ghost"
+      class="flex gap-x-2 items-center"
+      @click="() => router.back()"
+    >
+      <ArrowLeftIcon :size="18" />
+      <p class="font-semibold text-[16px]">Back</p>
+    </Button>
     <div class="w-full max-w-[500px] m-auto">
       <h1 class="font-bold text-[16px] mb-2">Create Your Busines</h1>
 

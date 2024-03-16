@@ -4,8 +4,8 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen flex">
     <MerchantSideBar />
-    <RouterView />
+    <RouterView class="flex-1" />
   </div>
 </template>

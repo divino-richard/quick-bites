@@ -1,8 +1,6 @@
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { useRouter } from 'vue-router';
 import { getSession } from './session.utils';
-import { useStore } from '@/store';
 
 const api = axios.create();
 

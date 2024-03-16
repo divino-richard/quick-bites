@@ -22,6 +22,7 @@ const authModule: Module<AuthState, RootState> = {
         setLoggedIn (state, session: UserSession) {
             setSession(session);
             state.loginError = '';
+            state.session = session
         },
         setLoginError (state, errorMessage: string) {
             state.loginError = errorMessage
