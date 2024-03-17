@@ -21,12 +21,30 @@ import api from "@/utils/api";
 import { toTypedSchema } from "@vee-validate/zod";
 import { AxiosError } from "axios";
 import { useForm } from "vee-validate";
-import { ArrowLeftIcon } from "lucide-vue-next";
-import { ref } from "vue";
+import { ArrowLeftIcon, Briefcase } from "lucide-vue-next";
+import { computed, onMounted, ref, watch } from "vue";
 import * as z from "zod";
 import { useRouter } from "vue-router";
+import { useStore } from "@/store";
 
 const router = useRouter();
+const store = useStore();
+
+const createBuinessLoading = computed(
+  () => store.state.merchantBusiness.loadingCreateBusiness
+);
+const createBusinessError = computed(
+  () => store.state.merchantBusiness.createBusinessError
+);
+
+const business = computed(() => store.state.merchantBusiness.businessInfo);
+watch(business, (business) => {
+  router.push("/merchant/business");
+});
+
+onMounted(() => {
+  store.dispatch("merchantBusiness/fetchBusiness");
+});
 
 const submitLoading = ref(false);
 const submitError = ref("");
@@ -49,26 +67,7 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async (data) => {
-  submitLoading.value = true;
-  try {
-    const createBusinessResponse = await api.post(
-      "/api/merchant/registration/completion",
-      data
-    );
-    router.replace("/merchant");
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.code === "ERR_NETWORK") {
-        submitError.value = "Please check your internet connection";
-        return;
-      }
-      submitError.value = error.response.data.message;
-      return;
-    }
-    submitError.value = "Something went wrong. Please try again later.";
-  } finally {
-    submitLoading.value = false;
-  }
+  store.dispatch("merchantBusiness/createBusiness", data);
 });
 </script>
 
@@ -83,10 +82,16 @@ const onSubmit = form.handleSubmit(async (data) => {
       <p class="font-semibold text-[16px]">Back</p>
     </Button>
     <div class="w-full max-w-[500px] m-auto">
-      <h1 class="font-bold text-[16px] mb-2">Create Your Busines</h1>
+      <div class="flex items-center gap-x-2 mb-5">
+        <Briefcase :size="20" />
+        <h1 class="font-bold text-[16px]">Create Your Busines</h1>
+      </div>
 
-      <p v-if="submitError" class="text-center text-red-500 text-sm font-semibold">
-        {{ submitError }}
+      <p
+        v-if="createBusinessError"
+        class="text-center text-red-500 text-sm font-semibold"
+      >
+        {{ createBusinessError }}
       </p>
 
       <form @submit="onSubmit" class="flex flex-col gap-y-[15px]">
@@ -111,8 +116,9 @@ const onSubmit = form.handleSubmit(async (data) => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Business type</SelectLabel>
-                    <SelectItem value="restuarant"> Restuarant </SelectItem>
-                    <SelectItem value="cafes-coffee-shop">
+                    <SelectItem value="Restuarant"> Restuarant </SelectItem>
+                    <SelectItem value="Fast Food"> Fast Food </SelectItem>
+                    <SelectItem value="Caffes and Coffe Shop">
                       Cafe and Coffee Shop
                     </SelectItem>
                   </SelectGroup>
@@ -183,8 +189,12 @@ const onSubmit = form.handleSubmit(async (data) => {
           </FormItem>
         </FormField>
 
-        <Button class="w-full" type="submit" :disabled="submitLoading">
-          {{ submitLoading ? "Loading..." : "Submit" }}
+        <Button
+          class="w-full"
+          type="submit"
+          :disabled="createBuinessLoading ? true : false"
+        >
+          {{ createBuinessLoading ? "Loading..." : "Submit" }}
         </Button>
       </form>
     </div>

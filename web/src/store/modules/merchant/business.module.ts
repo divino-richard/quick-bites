@@ -3,10 +3,13 @@ import api from "@/utils/api";
 import { AxiosError } from "axios";
 import { Module } from "vuex";
 
-interface BusinessState {
-    businessInfo: any | null,
-    loadingBusiness: boolean,
-    businessFetchError: string,
+export interface BusinessState {
+    businessInfo: any | null;
+    loadingBusiness: boolean;
+    businessFetchError: string;
+    loadingCreateBusiness: boolean;
+    createBusinessError: string;
+    businessCreated: boolean;
 }
 
 const businessModule: Module<BusinessState, RootState>  = {
@@ -14,8 +17,11 @@ const businessModule: Module<BusinessState, RootState>  = {
     state: {
         businessInfo: null,
         loadingBusiness: false,
-        businessFetchError: ''
-    },
+        businessFetchError: '',
+        loadingCreateBusiness: false,
+        createBusinessError: '',
+        businessCreated: false,
+    } as BusinessState,
     mutations: {
         setBusinessInfo (state, businessInfo) {
             state.businessInfo = businessInfo;
@@ -25,20 +31,18 @@ const businessModule: Module<BusinessState, RootState>  = {
         },
         setFetchBusinessError (state, errorMessage: string) {
             state.businessFetchError = errorMessage;
-        }
+        },
     },
     actions: {
         async fetchBusiness ({commit}) {
-            console.log("Dispatched =>>")
             commit('setBusinessLoading', true);
             try {
                 const response = await api.get('api/merchant/business');
-                console.log(response)
                 commit('setBusinessInfo', response.data);
             } catch (error) {
                 if (error instanceof AxiosError) {
                     if(error.code === 'ERR_NETWORK') {
-                        commit('setNetworkError', 'Network connection error');
+                        commit('setNetworkError', 'Network connection error', { root: true});
                         return;
                     }
                     commit('setFetchBusinessError', error.response?.data.message);
@@ -47,6 +51,32 @@ const businessModule: Module<BusinessState, RootState>  = {
                 commit('setFetchBusinessError', 'Failed to fetch business information')
             } finally {
                 commit('setBusinessLoading', false);
+            }
+        },
+        async createBusiness ({state, commit, dispatch}, business) {
+            state.loadingCreateBusiness = true;
+            try {
+                await api.post(
+                    "/api/merchant/registration/completion", 
+                    business
+                );
+                dispatch('fetchBusiness');
+            } catch (error) {
+                if (error instanceof AxiosError) {
+                    if (error.code === "ERR_NETWORK") {
+                        commit(
+                            'setNetworkError', 
+                            'Network connection error', 
+                            { root: true}
+                        );
+                        return;
+                    }
+                    state.createBusinessError = error.response?.data?.message;
+                    return;
+                }
+                state.createBusinessError = "Something went wrong. Please try again later.";
+            } finally {
+                state.loadingCreateBusiness = false
             }
         }
     },

@@ -1,11 +1,12 @@
 import { InjectionKey } from 'vue';
 import { createStore, useStore as baseUseStore,  Store } from 'vuex';
 import authModule, { AuthState } from './modules/auth.module';
-import businessModule from './modules/merchant/business.module';
+import merchantBusiness, { BusinessState } from './modules/merchant/business.module';
 
 export interface RootState {
     networkError: string,
-    auth: AuthState
+    auth: AuthState,
+    merchantBusiness: BusinessState,
 }
 
 export const key: InjectionKey<Store<RootState>> = Symbol();
@@ -13,7 +14,7 @@ export const key: InjectionKey<Store<RootState>> = Symbol();
 export const store: Store<RootState> = createStore<RootState>({
     modules: {
         auth: authModule,
-        merchantBusiness: businessModule
+        merchantBusiness: merchantBusiness
     },
     state: {
         networkError: '',
@@ -22,6 +23,11 @@ export const store: Store<RootState> = createStore<RootState>({
         setNetworkError (state, errorMessage: string) {
             state.networkError = errorMessage;
         },
+    }, 
+    getters: {
+        getNetworkError (state) {
+            return state.networkError;
+        }
     }
 });
 
