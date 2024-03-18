@@ -9,6 +9,7 @@ import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
 import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
 import MerchantBusiness from '@/views/merchant/Business.vue';
+import MerchantBusinessBraches from '@/views/merchant/Branches.vue';
 import MerchantSettings from '@/views/merchant/Settings.vue';
 import { checkRegistration } from "@/utils/user.utils";
 
@@ -74,6 +75,11 @@ const router = createRouter({
                     path: "settings",
                     name: "merchant-settings",
                     component: MerchantSettings
+                },
+                {
+                    path: 'branches',
+                    name: 'merchant-business-branches',
+                    component: MerchantBusinessBraches,
                 },
                 {
                     path: 'create-business',
