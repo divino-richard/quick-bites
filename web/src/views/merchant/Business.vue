@@ -19,8 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStore } from "@/store";
-import { Hash, MapPin, List, Utensils } from "lucide-vue-next";
-import { computed, onMounted } from "vue";
+import { Hash, MapPin, List, Utensils, Image } from "lucide-vue-next";
+import { Ref, computed, onMounted, ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { useForm } from "vee-validate";
@@ -29,6 +29,29 @@ import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/for
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
 const loadingBusiness = computed(() => store.state.merchantBusiness.loadingBusiness);
+
+const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
+const selectedImageUrl = ref('');
+
+const handleUploadClick = () => {
+  if(!foodMenuImages?.value) return;
+  foodMenuImages?.value?.click();
+};
+
+const handleFileChange = (event: any) => {
+  const file = event.target.files[0];
+
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      selectedImageUrl.value = reader.result as string;
+    }
+    reader.readAsDataURL(file);
+  }
+};
+
+// console.log("Image URL", selectedImageUrl.value)
+
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
 });
@@ -39,6 +62,7 @@ const formSchema = toTypedSchema(
     description: z.string().min(2).max(50),
     price: z.number(),
     category: z.string().min(2).max(50),
+    foodMenuImage: z.any()
   })
 );
 
@@ -146,7 +170,7 @@ const invoices = [
                     <h1>Add Food Menu</h1>
                   </DialogTitle>
                 </DialogHeader>
-                <form @submit="onSubmit" class="space-y-2">
+                <form @submit="onSubmit" class="space-y-2" enctype="multipart/form-data">
                   <FormField v-slot="{ componentField }" name="name">
                     <FormItem>
                       <FormLabel>Name</FormLabel>
@@ -187,14 +211,28 @@ const invoices = [
                     </FormItem>
                   </FormField>
 
-                  <FormField v-slot="{ componentField }" name="menuImages">
+                  <FormField v-slot="{ componentField }" name="foodMenuImage">
                     <FormItem>
-                      <FormLabel>Images</FormLabel>
+                      <FormLabel>Upload Image</FormLabel>
                       <FormControl>
-                        <Input
+                        <div 
+                          class="h-[100px] w-[100px] flex items-center justify-center rounded-md border border-zinc-100 cursor-pointer" 
+                          @click="handleUploadClick"
+                        >
+                          <img 
+                            v-if="selectedImageUrl" 
+                            :src="selectedImageUrl"
+                            class="w-full h-full object-cover"
+                          />
+                          <Image v-else :size="25" class="text-zinc-200" />
+                        </div>
+                        <input
+                          ref="foodMenuImages"
                           type="file"
-                          accept="images/png, images/jpg, images/jepg"
+                          accept="image/png, image/jpg, image/jpeg, image/gif"
+                          hidden
                           v-bind="componentField"
+                          @change="handleFileChange"
                         />
                       </FormControl>
                       <FormMessage />
@@ -205,7 +243,7 @@ const invoices = [
                     <Button type="submit"> Submit </Button>
                   </DialogFooter>
                 </form>
-              </DialogContent>
+              </DialogContent>  
             </Dialog>
           </div>
           <Table>
