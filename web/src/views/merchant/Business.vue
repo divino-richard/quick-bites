@@ -29,28 +29,27 @@ import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/for
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
 const loadingBusiness = computed(() => store.state.merchantBusiness.loadingBusiness);
+const addFoodMenuLoading = computed(() => store.state.merchantFoodMenu.addLoading);
 
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
-const selectedImageUrl = ref('');
+const selectedImageUrl = ref("");
 
 const handleUploadClick = () => {
-  if(!foodMenuImages?.value) return;
+  if (!foodMenuImages?.value) return;
   foodMenuImages?.value?.click();
 };
 
 const handleFileChange = (event: any) => {
   const file = event.target.files[0];
 
-  if(file) {
+  if (file) {
     const reader = new FileReader();
     reader.onload = () => {
       selectedImageUrl.value = reader.result as string;
-    }
+    };
     reader.readAsDataURL(file);
   }
 };
-
-// console.log("Image URL", selectedImageUrl.value)
 
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
@@ -62,7 +61,7 @@ const formSchema = toTypedSchema(
     description: z.string().min(2).max(50),
     price: z.number(),
     category: z.string().min(2).max(50),
-    foodMenuImage: z.any()
+    foodMenuImage: z.any(),
   })
 );
 
@@ -71,7 +70,7 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit((data) => {
-  console.log(data);
+  store.dispatch("merchantFoodMenu/addFoodMenu", data);
 });
 
 const invoices = [
@@ -215,12 +214,12 @@ const invoices = [
                     <FormItem>
                       <FormLabel>Upload Image</FormLabel>
                       <FormControl>
-                        <div 
-                          class="h-[100px] w-[100px] flex items-center justify-center rounded-md border border-zinc-100 cursor-pointer" 
+                        <div
+                          class="h-[100px] w-[100px] flex items-center justify-center rounded-md border border-zinc-100 cursor-pointer"
                           @click="handleUploadClick"
                         >
-                          <img 
-                            v-if="selectedImageUrl" 
+                          <img
+                            v-if="selectedImageUrl"
                             :src="selectedImageUrl"
                             class="w-full h-full object-cover"
                           />
@@ -240,10 +239,12 @@ const invoices = [
                   </FormField>
 
                   <DialogFooter class="w-full flex justify-end">
-                    <Button type="submit"> Submit </Button>
+                    <Button type="submit" :disabled="addFoodMenuLoading">
+                      {{ addFoodMenuLoading ? "Loading..." : "Submit" }}
+                    </Button>
                   </DialogFooter>
                 </form>
-              </DialogContent>  
+              </DialogContent>
             </Dialog>
           </div>
           <Table>
