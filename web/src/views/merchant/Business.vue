@@ -20,19 +20,23 @@ import {
 } from "@/components/ui/table";
 import { useStore } from "@/store";
 import { Hash, MapPin, List, Utensils, Image } from "lucide-vue-next";
-import { Ref, computed, onMounted, ref } from "vue";
+import { Ref, computed, onMounted, ref, watch } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { useForm } from "vee-validate";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/toast";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
 const loadingBusiness = computed(() => store.state.merchantBusiness.loadingBusiness);
 const addFoodMenuLoading = computed(() => store.state.merchantFoodMenu.addLoading);
+const addFoodMenuError = computed(() => store.state.merchantFoodMenu.addError);
+const addFoodMenuSuccess = computed(() => store.state.merchantFoodMenu.addItemSuccess);
 
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
+const openAddFoodMenuModal = ref(false);
 
 const handleUploadClick = () => {
   if (!foodMenuImages?.value) return;
@@ -50,6 +54,10 @@ const handleFileChange = (event: any) => {
     reader.readAsDataURL(file);
   }
 };
+
+watch(addFoodMenuSuccess, () => {
+  openAddFoodMenuModal.value = false;
+});
 
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
@@ -73,50 +81,7 @@ const onSubmit = form.handleSubmit((data) => {
   store.dispatch("merchantFoodMenu/addFoodMenu", data);
 });
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+const invoices = [{}];
 </script>
 
 <template>
@@ -156,12 +121,10 @@ const invoices = [
               <List :size="18" />
               <h1 class="text-[14px] font-medium">Menu List</h1>
             </div>
-            <Dialog>
-              <DialogTrigger>
-                <Button class="text-[12px] h-[35px] py-[2px] bg-zinc-900">
-                  Add Menu
-                </Button>
-              </DialogTrigger>
+            <Button class="text-[12px] h-[35px] py-[2px] bg-zinc-900" @click="() => openAddFoodMenuModal = true">
+              Add Menu
+            </Button>
+            <Dialog :open="addFoodMenuSuccess ? false : true">
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle class="flex gap-x-2">
@@ -169,6 +132,8 @@ const invoices = [
                     <h1>Add Food Menu</h1>
                   </DialogTitle>
                 </DialogHeader>
+                <p v-if="addFoodMenuError" class="text-[red] text-center">{{ addFoodMenuError }}</p>
+                <p v-if="addFoodMenuSuccess" class="text-[green] text-center">Food menu added successfully</p>
                 <form @submit="onSubmit" class="space-y-2" enctype="multipart/form-data">
                   <FormField v-slot="{ componentField }" name="name">
                     <FormItem>
@@ -257,7 +222,7 @@ const invoices = [
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="invoice in invoices" :key="invoice.invoice">
+              <!-- <TableRow v-for="invoice in invoices" :key="invoice.invoice">
                 <TableCell class="font-medium">
                   {{ invoice.invoice }}
                 </TableCell>
@@ -266,7 +231,7 @@ const invoices = [
                 <TableCell class="text-right">
                   {{ invoice.totalAmount }}
                 </TableCell>
-              </TableRow>
+              </TableRow> -->
             </TableBody>
           </Table>
         </div>

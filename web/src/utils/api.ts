@@ -14,7 +14,6 @@ api.interceptors.request.use(
         
         config.baseURL = "http://localhost:5100";
         config.timeout = 10000;
-        config.headers["Content-Type"] = "application/json";
 
         return config;
     },

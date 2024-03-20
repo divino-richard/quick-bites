@@ -11,6 +11,11 @@ foodMenuRouter.post('/', (req: Request, res: Response) => {
             return;
         }
 
+        if(!req.file) {
+            res.status(400).json({message: 'Food menu image is require'});
+            return;
+        }
+
         addFoodMenu(req, res);
     })
 });
