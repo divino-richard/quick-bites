@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -25,7 +18,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { useForm } from "vee-validate";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -37,6 +30,8 @@ const addFoodMenuSuccess = computed(() => store.state.merchantFoodMenu.addItemSu
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
 const openAddFoodMenuModal = ref(false);
+
+const { toast } = useToast();
 
 const handleUploadClick = () => {
   if (!foodMenuImages?.value) return;
@@ -55,8 +50,17 @@ const handleFileChange = (event: any) => {
   }
 };
 
-watch(addFoodMenuSuccess, () => {
-  openAddFoodMenuModal.value = false;
+watch(addFoodMenuSuccess, (success) => {
+  if (success) {
+    openAddFoodMenuModal.value = false;
+    selectedImageUrl.value = "";
+    toast({
+      title: "Food menu added successfully",
+      variant: "default",
+      class: "text-[green]",
+    });
+    store.commit("merchantFoodMenu/resetAddSuccess");
+  }
 });
 
 onMounted(() => {
@@ -81,7 +85,7 @@ const onSubmit = form.handleSubmit((data) => {
   store.dispatch("merchantFoodMenu/addFoodMenu", data);
 });
 
-const invoices = [{}];
+// const invoices = [{}];
 </script>
 
 <template>
@@ -121,10 +125,16 @@ const invoices = [{}];
               <List :size="18" />
               <h1 class="text-[14px] font-medium">Menu List</h1>
             </div>
-            <Button class="text-[12px] h-[35px] py-[2px] bg-zinc-900" @click="() => openAddFoodMenuModal = true">
+            <Button
+              class="text-[12px] h-[35px] py-[2px] bg-zinc-900"
+              @click="() => (openAddFoodMenuModal = true)"
+            >
               Add Menu
             </Button>
-            <Dialog :open="addFoodMenuSuccess ? false : true">
+            <Dialog
+              :open="openAddFoodMenuModal"
+              @update:open="(value: boolean) => openAddFoodMenuModal = value"
+            >
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle class="flex gap-x-2">
@@ -132,8 +142,9 @@ const invoices = [{}];
                     <h1>Add Food Menu</h1>
                   </DialogTitle>
                 </DialogHeader>
-                <p v-if="addFoodMenuError" class="text-[red] text-center">{{ addFoodMenuError }}</p>
-                <p v-if="addFoodMenuSuccess" class="text-[green] text-center">Food menu added successfully</p>
+                <p v-if="addFoodMenuError" class="text-[red] text-center">
+                  {{ addFoodMenuError }}
+                </p>
                 <form @submit="onSubmit" class="space-y-2" enctype="multipart/form-data">
                   <FormField v-slot="{ componentField }" name="name">
                     <FormItem>

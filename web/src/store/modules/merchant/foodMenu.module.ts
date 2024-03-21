@@ -28,6 +28,9 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         addError(state, errorMessage: string) {
             state.addError = errorMessage;
         },
+        resetAddSuccess (state) {
+            state.addItemSuccess = false;
+        },
         gotFoodMenus(state, foodMenu) {
 
         }
