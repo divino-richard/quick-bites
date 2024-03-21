@@ -9,6 +9,9 @@ export interface FoodMenuState {
     addError: string;
     addedItem: any;
     addItemSuccess: boolean;
+    foodMenus: any;
+    getFoodMenusLoading: boolean;
+    getFoodMenusError: string;
 }
 
 const foodMenuModule: Module<FoodMenuState, RootState> = {
@@ -18,6 +21,9 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         addError: '',
         addedItem: null,
         addItemSuccess: false,
+        foodMenus: null,
+        getFoodMenusLoading: false,
+        getFoodMenusError: "",
     } as FoodMenuState,
     mutations: {
         foodMenuAdded(state, foodMenu) {
@@ -31,12 +37,12 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         resetAddSuccess (state) {
             state.addItemSuccess = false;
         },
-        gotFoodMenus(state, foodMenu) {
-
+        gotFoodMenus(state, foodMenus) {
+            state.foodMenus = foodMenus
         }
     },
     actions: {
-        async addFoodMenu({state, commit}, data: FoodMenu) {
+        async addFoodMenu({state, commit, dispatch}, data: FoodMenu) {
             state.addLoading = true;
             try {
                 const foodMenu = await api.post('/api/foodMenu', data, { 
@@ -45,6 +51,7 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                     }
                 });
                 commit('foodMenuAdded', foodMenu);
+                dispatch('getFoodMenus');
             } catch (error) {
                 if (error instanceof AxiosError) {
                     state.addError = error.response?.data.message;
@@ -55,12 +62,26 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                 state.addLoading = false;
             }
         },
-        async getFoodMenus (state) {
-            state
+        async getFoodMenus ({state, commit}) {
+            state.getFoodMenusLoading = true;
+            try {
+                const foodMenus = await api.get('/api/foodMenu/list');
+                commit('gotFoodMenus', foodMenus.data);
+            } catch (error) {
+                if (error instanceof AxiosError) {
+                    state.getFoodMenusError = error.response?.data.message;
+                    return;
+                }
+                state.getFoodMenusError = 'Something went wrong!';
+            } finally {
+                state.getFoodMenusLoading = false;
+            }
         }
     },
     getters: {
-
+        getFoodMenus(state) {
+            return state.foodMenus;
+        }
     }
 }
 

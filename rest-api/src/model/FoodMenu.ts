@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const foodMenuSchema = new Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
     name: String,
     description: String,
     price: String,

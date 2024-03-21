@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -19,6 +20,7 @@ import * as z from "zod";
 import { useForm } from "vee-validate";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
+import moment from "moment";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -26,6 +28,7 @@ const loadingBusiness = computed(() => store.state.merchantBusiness.loadingBusin
 const addFoodMenuLoading = computed(() => store.state.merchantFoodMenu.addLoading);
 const addFoodMenuError = computed(() => store.state.merchantFoodMenu.addError);
 const addFoodMenuSuccess = computed(() => store.state.merchantFoodMenu.addItemSuccess);
+const foodMenus = computed(() => store.getters["merchantFoodMenu/getFoodMenus"]);
 
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
@@ -65,6 +68,7 @@ watch(addFoodMenuSuccess, (success) => {
 
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
+  store.dispatch("merchantFoodMenu/getFoodMenus");
 });
 
 const formSchema = toTypedSchema(
@@ -84,8 +88,6 @@ const form = useForm({
 const onSubmit = form.handleSubmit((data) => {
   store.dispatch("merchantFoodMenu/addFoodMenu", data);
 });
-
-// const invoices = [{}];
 </script>
 
 <template>
@@ -95,7 +97,7 @@ const onSubmit = form.handleSubmit((data) => {
     </div>
 
     <div v-else>
-      <div v-if="business" class="w-full max-w-[900px] m-auto">
+      <div v-if="business" class="w-full max-w-[1000px] m-auto">
         <div class="flex gap-x-2 py-5">
           <Avatar class="w-[75px] h-[75px]">
             <AvataFallback class="text-[35px]">
@@ -118,7 +120,7 @@ const onSubmit = form.handleSubmit((data) => {
             </div>
           </div>
         </div>
-        <Separator class="w-full max-w-[900px] m-auto bg-zinc-100" />
+        <Separator class="w-full max-w-[1000px] m-auto bg-zinc-100" />
         <div class="py-2">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-x-2">
@@ -223,26 +225,37 @@ const onSubmit = form.handleSubmit((data) => {
               </DialogContent>
             </Dialog>
           </div>
-          <Table>
+          <Table class="border border-zinc-100">
             <TableHeader>
-              <TableRow>
-                <TableHead class="w-[100px]"> Invoice </TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead class="text-right"> Amount </TableHead>
+              <TableRow class="bg-zinc-100">
+                <TableHead class="w-[100px]"> Name </TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead> Category </TableHead>
+                <TableHead> Posted </TableHead>
+                <TableHead> Image </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <!-- <TableRow v-for="invoice in invoices" :key="invoice.invoice">
+              <TableRow v-for="foodMenu in foodMenus" :key="foodMenu.id">
                 <TableCell class="font-medium">
-                  {{ invoice.invoice }}
+                  {{ foodMenu.name }}
                 </TableCell>
-                <TableCell>{{ invoice.paymentStatus }}</TableCell>
-                <TableCell>{{ invoice.paymentMethod }}</TableCell>
-                <TableCell class="text-right">
-                  {{ invoice.totalAmount }}
+                <TableCell class="max-w-[200px] truncate">{{
+                  foodMenu.description
+                }}</TableCell>
+                <TableCell>{{ foodMenu.price }}</TableCell>
+                <TableCell>
+                  {{ foodMenu.category }}
                 </TableCell>
-              </TableRow> -->
+                <TableCell> {{ moment(foodMenu.createdAt).fromNow() }} </TableCell
+                ><TableCell>
+                  <img
+                    class="w-[50px] h-[45px] rounded-md object-cover border border-zinc-200 p-1"
+                    :src="foodMenu.image"
+                  />
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
