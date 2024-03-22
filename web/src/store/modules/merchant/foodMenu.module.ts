@@ -12,6 +12,9 @@ export interface FoodMenuState {
     foodMenus: any;
     getFoodMenusLoading: boolean;
     getFoodMenusError: string;
+    deleteItemLoading: boolean;
+    deleteItemError: string;
+    deleteItemSuccess: boolean;
 }
 
 const foodMenuModule: Module<FoodMenuState, RootState> = {
@@ -24,6 +27,9 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         foodMenus: null,
         getFoodMenusLoading: false,
         getFoodMenusError: "",
+        deleteItemLoading: false,
+        deleteItemError: "",
+        deleteItemSuccess: false,
     } as FoodMenuState,
     mutations: {
         foodMenuAdded(state, foodMenu) {
@@ -75,6 +81,22 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                 state.getFoodMenusError = 'Something went wrong!';
             } finally {
                 state.getFoodMenusLoading = false;
+            }
+        },
+        async deleteItem({state, dispatch}, foodMenuId) {
+            try {
+                state.deleteItemLoading = false;
+                await api.delete(`/api/foodMenu/${foodMenuId}`);
+                state.deleteItemSuccess = true;
+                dispatch('getFoodMenus');
+            } catch (error) {
+                if(error instanceof AxiosError) {
+                    state.deleteItemError = error.response?.data.message;
+                    return;
+                }
+                state.deleteItemError = "Something went wrong.";
+            } finally {
+                state.deleteItemLoading = false;
             }
         }
     },

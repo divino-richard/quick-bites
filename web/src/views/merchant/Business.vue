@@ -21,6 +21,8 @@ import { useForm } from "vee-validate";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/components/ui/toast";
 import moment from "moment";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverClose } from "radix-vue";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -88,17 +90,21 @@ const form = useForm({
 const onSubmit = form.handleSubmit((data) => {
   store.dispatch("merchantFoodMenu/addFoodMenu", data);
 });
+
+const handleDeleteMenu = (foodMenuId: string) => {
+  store.dispatch("merchantFoodMenu/deleteItem", foodMenuId);
+};
 </script>
 
 <template>
-  <div>
+  <div class="w-full p-5">
     <div v-if="loadingBusiness">
       <h1>Loading....</h1>
     </div>
 
     <div v-else>
-      <div v-if="business" class="w-full max-w-[1000px] m-auto">
-        <div class="flex gap-x-2 py-5">
+      <div v-if="business">
+        <div class="flex gap-x-2">
           <Avatar class="w-[75px] h-[75px]">
             <AvataFallback class="text-[35px]">
               {{ business.name[0].toUpperCase() }}
@@ -120,8 +126,8 @@ const onSubmit = form.handleSubmit((data) => {
             </div>
           </div>
         </div>
-        <Separator class="w-full max-w-[1000px] m-auto bg-zinc-100" />
-        <div class="py-2">
+        <Separator class="w-full bg-zinc-100" />
+        <div class="py-5">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-x-2">
               <List :size="18" />
@@ -228,32 +234,61 @@ const onSubmit = form.handleSubmit((data) => {
           <Table class="border border-zinc-100">
             <TableHeader>
               <TableRow class="bg-zinc-100">
+                <TableHead class="w-[100px]"> # </TableHead>
                 <TableHead class="w-[100px]"> Name </TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead> Category </TableHead>
                 <TableHead> Posted </TableHead>
                 <TableHead> Image </TableHead>
+                <TableHead class="text-center"> Actions </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="foodMenu in foodMenus" :key="foodMenu.id">
+              <TableRow v-for="(foodMenu, index) in foodMenus" :key="foodMenu._id">
+                <TableCell>{{ index + 1 }}</TableCell>
                 <TableCell class="font-medium">
                   {{ foodMenu.name }}
                 </TableCell>
-                <TableCell class="max-w-[200px] truncate">{{
-                  foodMenu.description
-                }}</TableCell>
+                <TableCell class="max-w-[200px] truncate">
+                  {{ foodMenu.description }}
+                </TableCell>
                 <TableCell>{{ foodMenu.price }}</TableCell>
                 <TableCell>
                   {{ foodMenu.category }}
                 </TableCell>
-                <TableCell> {{ moment(foodMenu.createdAt).fromNow() }} </TableCell
-                ><TableCell>
+                <TableCell> {{ moment(foodMenu.createdAt).fromNow() }} </TableCell>
+                <TableCell>
                   <img
                     class="w-[50px] h-[45px] rounded-md object-cover border border-zinc-200 p-1"
                     :src="foodMenu.image"
                   />
+                </TableCell>
+                <TableCell class="flex justify-center">
+                  <Button variant="ghost">Edit</Button>
+                  <Popover>
+                    <PopoverTrigger as-child>
+                      <Button variant="ghost" class="text-red-500"> Delete </Button>
+                    </PopoverTrigger>
+                    <PopoverContent class="mx-2">
+                      <h4>Are you sure to delete?</h4>
+                      <p class="text-[12px]">This menu will be deleted permanently</p>
+                      <div class="flex gap-x-2 mt-5 justify-end">
+                        <PopoverClose>
+                          <Button variant="ghost" class="h-[30px] text-[12px]">
+                            Cancel
+                          </Button>
+                        </PopoverClose>
+                        <Button
+                          variant="destructive"
+                          class="h-[30px] text-[12px]"
+                          @click="handleDeleteMenu(foodMenu._id)"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </TableCell>
               </TableRow>
             </TableBody>
