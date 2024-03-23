@@ -44,8 +44,14 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
             state.addItemSuccess = false;
         },
         gotFoodMenus(state, foodMenus) {
-            state.foodMenus = foodMenus
-        }
+            state.foodMenus = foodMenus;
+        },
+        resetDeleteItemSuccess(state) {
+            state.deleteItemSuccess = false;
+        },
+        resetDeleteItemError(state) {
+            state.deleteItemError = "";
+        },
     },
     actions: {
         async addFoodMenu({state, commit, dispatch}, data: FoodMenu) {
@@ -85,7 +91,7 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         },
         async deleteItem({state, dispatch}, foodMenuId) {
             try {
-                state.deleteItemLoading = false;
+                state.deleteItemLoading = true;
                 await api.delete(`/api/foodMenu/${foodMenuId}`);
                 state.deleteItemSuccess = true;
                 dispatch('getFoodMenus');

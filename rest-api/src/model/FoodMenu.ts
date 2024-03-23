@@ -11,6 +11,7 @@ const foodMenuSchema = new Schema({
     description: String,
     price: String,
     category: String,
+    imageFileName: String,
     image: String
 }, { timestamps: true });
 

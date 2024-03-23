@@ -31,6 +31,13 @@ const addFoodMenuLoading = computed(() => store.state.merchantFoodMenu.addLoadin
 const addFoodMenuError = computed(() => store.state.merchantFoodMenu.addError);
 const addFoodMenuSuccess = computed(() => store.state.merchantFoodMenu.addItemSuccess);
 const foodMenus = computed(() => store.getters["merchantFoodMenu/getFoodMenus"]);
+const deleteFoodMenuLoading = computed(
+  () => store.state.merchantFoodMenu.deleteItemLoading
+);
+const deleteFoodMenuSuccess = computed(
+  () => store.state.merchantFoodMenu.deleteItemSuccess
+);
+const deleteFoodMenuError = computed(() => store.state.merchantFoodMenu.deleteItemError);
 
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
@@ -65,6 +72,27 @@ watch(addFoodMenuSuccess, (success) => {
       class: "text-[green]",
     });
     store.commit("merchantFoodMenu/resetAddSuccess");
+  }
+});
+
+watch(deleteFoodMenuError, (error) => {
+  if (error) {
+    toast({
+      title: error,
+      variant: "destructive",
+    });
+    store.commit("merchantFoodMenu/resetDeleteItemError");
+  }
+});
+
+watch(deleteFoodMenuSuccess, (deleteSuccess) => {
+  if (deleteSuccess) {
+    toast({
+      title: "Food menu deleted successfully",
+      variant: "default",
+      class: "text-[green]",
+    });
+    store.commit("merchantFoodMenu/resetDeleteItemSuccess");
   }
 });
 
@@ -284,7 +312,7 @@ const handleDeleteMenu = (foodMenuId: string) => {
                           class="h-[30px] text-[12px]"
                           @click="handleDeleteMenu(foodMenu._id)"
                         >
-                          Delete
+                          {{ deleteFoodMenuLoading ? "Loading..." : "Delete" }}
                         </Button>
                       </div>
                     </PopoverContent>

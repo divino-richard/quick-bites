@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import foodMenuItemUpload from '../utils/fileUpload/foodMenuItem.utils';
-import { addFoodMenu, getFoodMenusByUserId } from '../controller/foodMenu.controller';
+import { addFoodMenu, deleteFoodMenu, getFoodMenusByUserId } from '../controller/foodMenu.controller';
 
 const foodMenuRouter = express.Router();
 
@@ -22,6 +22,10 @@ foodMenuRouter.post('/', (req: Request, res: Response) => {
 
 foodMenuRouter.get('/list', (req: Request, res: Response) => {
     getFoodMenusByUserId(req, res);
+});
+
+foodMenuRouter.delete('/:id', (req: Request, res: Response) => {
+    deleteFoodMenu(req, res);
 });
 
 export default foodMenuRouter;
