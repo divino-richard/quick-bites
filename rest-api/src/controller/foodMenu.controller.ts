@@ -73,3 +73,36 @@ export async function deleteFoodMenu(req: Request, res: Response) {
         })
     }
 }
+
+export async function updateFoodMenu(req: Request, res: Response) {
+    try {
+        const foodMenuId = req.params.id;
+
+        if(!mongoose.isValidObjectId(foodMenuId)) {
+            res.status(400).json({
+                message: "Invalid paramerter",
+            });
+            return;
+        }
+
+        const updateFoodMenu = await FoodMenu.findOneAndUpdate(
+            { _id: foodMenuId }, 
+            { ...req.body },
+            { new: true }
+        );
+
+        if(!updateFoodMenu) {
+            res.status(400).json({
+                message: "Can't find and update item",
+            });
+            return;
+        }
+
+        res.status(200).json(updateFoodMenu);
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+        })
+    }
+}
