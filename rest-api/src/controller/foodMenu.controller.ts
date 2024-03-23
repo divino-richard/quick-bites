@@ -106,3 +106,35 @@ export async function updateFoodMenu(req: Request, res: Response) {
         })
     }
 }
+
+export async function updateFoodMenuImage(req: Request, res: Response) {
+    try {
+        const foodMenu = await FoodMenu.findOneAndUpdate(
+            { _id: req.params.id },
+            { 
+                imageFileName: req.file?.filename,
+                image: `${process.env.BASE_URL}/uploads/${req.file?.filename}`
+            }
+        );
+
+        const imagePath = `${ROOT_DIRECTORY}/src/uploads/${foodMenu?.imageFileName}`;
+        fs.unlink(imagePath, (error) => {
+            if(error) {
+                throw new Error(error.message)
+            }
+
+            res.status(200).json({
+                message: "Food menu deleted successfully",
+            })
+        });
+
+        res.status(200).json({
+            message: "Food menu image updated successfully"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+        })
+    }
+} 

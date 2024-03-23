@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import foodMenuItemUpload from '../utils/fileUpload/foodMenuItem.utils';
-import { addFoodMenu, deleteFoodMenu, getFoodMenusByUserId, updateFoodMenu } from '../controller/foodMenu.controller';
+import { addFoodMenu, deleteFoodMenu, getFoodMenusByUserId, updateFoodMenu, updateFoodMenuImage } from '../controller/foodMenu.controller';
 import { validateSchema } from '../validator';
 import { updateFoodMenuItemSchema } from '../validator/schemas/foodMenu.schema';
 
@@ -32,6 +32,22 @@ foodMenuRouter.delete('/:id', (req: Request, res: Response) => {
 
 foodMenuRouter.put('/:id', validateSchema(updateFoodMenuItemSchema), (req: Request, res: Response) => {
     updateFoodMenu(req, res);
+});
+
+foodMenuRouter.put('/image/:id', (req: Request, res: Response) => {
+    foodMenuItemUpload(req, res, (error) => {
+        if(error) {
+            res.status(400).json({message: error.message});
+            return;
+        }
+
+        if(!req.file) {
+            res.status(400).json({message: 'Food menu image is required'});
+            return;
+        }
+
+        updateFoodMenuImage(req, res);
+    })
 });
 
 export default foodMenuRouter;
