@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStore } from "@/store";
-import { Hash, MapPin, List, Utensils, Image } from "lucide-vue-next";
+import { Store, MapPin, List, Utensils, Image } from "lucide-vue-next";
 import { Ref, computed, onMounted, ref, watch } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
@@ -23,6 +23,7 @@ import { useToast } from "@/components/ui/toast";
 import moment from "moment";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "radix-vue";
+import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vue";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -126,9 +127,7 @@ const handleDeleteMenu = (foodMenuId: string) => {
 
 <template>
   <div class="w-full p-5">
-    <div v-if="loadingBusiness">
-      <h1>Loading....</h1>
-    </div>
+    <BusinessInfoSkeleton v-if="loadingBusiness" />
 
     <div v-else>
       <div v-if="business">
@@ -144,14 +143,13 @@ const handleDeleteMenu = (foodMenuId: string) => {
               <MapPin :size="16" />
               <p>{{ business.address }}</p>
             </div>
-            <div class="flex items-center gap-x-2 text-[12px] font-normal">
-              <Hash :size="16" />
-              <p>{{ `Registration number: ${business.registrationNumber}` }}</p>
-            </div>
-            <div class="flex items-center gap-x-2 text-[12px] font-normal">
-              <Hash :size="16" />
-              <p>{{ `TIN: ${business.taxIdNumber}` }}</p>
-            </div>
+            <Button
+              variant="ghost"
+              class="mt-2 px-[5px] py-0 h-[35px] text-[12px] space-x-2"
+            >
+              <Store :size="14" class="text-orange-600" />
+              <span class="text-zinc-900">View Info</span>
+            </Button>
           </div>
         </div>
         <Separator class="w-full bg-zinc-100" />
