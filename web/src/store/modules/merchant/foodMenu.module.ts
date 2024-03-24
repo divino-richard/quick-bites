@@ -15,9 +15,12 @@ export interface FoodMenuState {
     deleteItemLoading: boolean;
     deleteItemError: string;
     deleteItemSuccess: boolean;
+    updateItemLoading: boolean;
+    updateItemError: string;
     imageUpdated: boolean;
     updateImageLoading: boolean;
     updateImageError: string;
+    updateItemSuccess: boolean;
 }
 
 const foodMenuModule: Module<FoodMenuState, RootState> = {
@@ -33,9 +36,12 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         deleteItemLoading: false,
         deleteItemError: "",
         deleteItemSuccess: false,
+        updateItemLoading: false,
+        updateItemError: "",
         imageUpdated: false,
         updateImageLoading: false,
         updateImageError: "",
+        updateItemSuccess: false,
     } as FoodMenuState,
     mutations: {
         foodMenuAdded(state, foodMenu) {
@@ -63,6 +69,12 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         },
         resetImageUpdated(state) {
             state.updateImageError = "";
+        },
+        toggleUpdateItemSuccess(state) {
+            state.updateItemSuccess = !state.updateItemSuccess;
+        },
+        resetUpdateItemError(state) {
+            state.updateItemError = "";
         }
     },
     actions: {
@@ -115,6 +127,23 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                 state.deleteItemError = "Something went wrong.";
             } finally {
                 state.deleteItemLoading = false;
+            }
+        },
+        async updateItem({state, commit, dispatch}, foodMenu) {
+            console.log("D =>>", foodMenu)
+            try {
+                state.updateItemLoading = true;
+                await api.put(`/api/foodMenu/${foodMenu.id}`, foodMenu.newData);
+                commit('toggleUpdateItemSuccess');
+                dispatch('getFoodMenus');
+            } catch (error) {
+                if(error instanceof AxiosError) {
+                    state.updateItemError = error.response?.data.message;
+                    return;
+                }
+                state.updateItemError = "Something went wrong";
+            } finally {
+                state.updateItemLoading = false;
             }
         },
         async updateImage({state, commit, dispatch}, foodMenu) {

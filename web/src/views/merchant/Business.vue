@@ -25,6 +25,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { PopoverClose } from "radix-vue";
 import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vue";
 import UpdateMenuImageModal from "@/components/merchant/UpdateMenuImageModal.vue";
+import UpdateFoodMenuModal from "@/components/merchant/UpdateFoodMenuModal.vue";
+import { FoodMenu } from "@/types/foodMenu.type";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -46,6 +48,8 @@ const selectedImageUrl = ref("");
 const openAddFoodMenuModal = ref(false);
 const openUpdateImageModal = ref(false);
 const selectedFoodMenuId = ref("");
+const foodMenuToEdit = ref<FoodMenu | null>(null);
+const openUpdateFoodMenuModal = ref(false);
 
 const { toast } = useToast();
 
@@ -125,6 +129,11 @@ const onSubmit = form.handleSubmit((data) => {
 
 const handleDeleteMenu = (foodMenuId: string) => {
   store.dispatch("merchantFoodMenu/deleteItem", foodMenuId);
+};
+
+const handleEditFoodMenu = (foodMenu: FoodMenu) => {
+  foodMenuToEdit.value = foodMenu;
+  openUpdateFoodMenuModal.value = true;
 };
 
 const handleFoodMenuImageUpdate = (id: string) => {
@@ -310,7 +319,9 @@ const handleFoodMenuImageUpdate = (id: string) => {
                   </div>
                 </TableCell>
                 <TableCell class="flex justify-center">
-                  <Button variant="ghost">Edit</Button>
+                  <Button variant="ghost" @click="handleEditFoodMenu(foodMenu)">
+                    Edit
+                  </Button>
                   <Popover>
                     <PopoverTrigger as-child>
                       <Button variant="ghost" class="text-red-500"> Delete </Button>
@@ -343,6 +354,12 @@ const handleFoodMenuImageUpdate = (id: string) => {
             :id="selectedFoodMenuId"
             :open="openUpdateImageModal"
             :onClose="() => (openUpdateImageModal = false)"
+          />
+
+          <UpdateFoodMenuModal
+            :open="openUpdateFoodMenuModal"
+            :onClose="() => (openUpdateFoodMenuModal = false)"
+            :currentData="foodMenuToEdit"
           />
         </div>
       </div>
