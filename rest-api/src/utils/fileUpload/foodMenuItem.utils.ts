@@ -30,7 +30,6 @@ async function foodMenuFileFilter (req: Request, file: Express.Multer.File, call
         }
 
         const foundFoodMenu = await FoodMenu.findById(req.params.id);
-        console.log(foundFoodMenu)
         if (!foundFoodMenu) {
             callback(new Error("Can't find an item"));
             return;

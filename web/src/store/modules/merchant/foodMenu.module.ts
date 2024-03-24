@@ -15,6 +15,9 @@ export interface FoodMenuState {
     deleteItemLoading: boolean;
     deleteItemError: string;
     deleteItemSuccess: boolean;
+    imageUpdated: boolean;
+    updateImageLoading: boolean;
+    updateImageError: string;
 }
 
 const foodMenuModule: Module<FoodMenuState, RootState> = {
@@ -30,6 +33,9 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         deleteItemLoading: false,
         deleteItemError: "",
         deleteItemSuccess: false,
+        imageUpdated: false,
+        updateImageLoading: false,
+        updateImageError: "",
     } as FoodMenuState,
     mutations: {
         foodMenuAdded(state, foodMenu) {
@@ -52,6 +58,12 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         resetDeleteItemError(state) {
             state.deleteItemError = "";
         },
+        toggleImageUpdated(state) {
+            state.imageUpdated = !state.imageUpdated;
+        },
+        resetImageUpdated(state) {
+            state.updateImageError = "";
+        }
     },
     actions: {
         async addFoodMenu({state, commit, dispatch}, data: FoodMenu) {
@@ -103,6 +115,26 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                 state.deleteItemError = "Something went wrong.";
             } finally {
                 state.deleteItemLoading = false;
+            }
+        },
+        async updateImage({state, commit, dispatch}, foodMenu) {
+            try {
+                state.updateImageLoading = true;
+                await api.put(`/api/foodMenu/image/${foodMenu.id}`, foodMenu.formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                });
+                commit('toggleImageUpdated');
+                dispatch('getFoodMenus');
+            } catch (error) {
+                if(error instanceof AxiosError) {
+                    state.updateImageError = error.response?.data.message;
+                    return;
+                }
+                state.updateImageError = "Something went wrong";
+            } finally {
+                state.updateImageLoading = false;
             }
         }
     },

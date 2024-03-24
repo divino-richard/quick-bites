@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStore } from "@/store";
-import { Store, MapPin, List, Utensils, Image } from "lucide-vue-next";
+import { Store, MapPin, List, Utensils, Image, Edit } from "lucide-vue-next";
 import { Ref, computed, onMounted, ref, watch } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
@@ -24,6 +24,7 @@ import moment from "moment";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "radix-vue";
 import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vue";
+import UpdateMenuImageModal from "@/components/merchant/UpdateMenuImageModal.vue";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -43,6 +44,8 @@ const deleteFoodMenuError = computed(() => store.state.merchantFoodMenu.deleteIt
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
 const openAddFoodMenuModal = ref(false);
+const openUpdateImageModal = ref(false);
+const selectedFoodMenuId = ref("");
 
 const { toast } = useToast();
 
@@ -122,6 +125,11 @@ const onSubmit = form.handleSubmit((data) => {
 
 const handleDeleteMenu = (foodMenuId: string) => {
   store.dispatch("merchantFoodMenu/deleteItem", foodMenuId);
+};
+
+const handleFoodMenuImageUpdate = (id: string) => {
+  openUpdateImageModal.value = true;
+  selectedFoodMenuId.value = id;
 };
 </script>
 
@@ -285,10 +293,21 @@ const handleDeleteMenu = (foodMenuId: string) => {
                 </TableCell>
                 <TableCell> {{ moment(foodMenu.createdAt).fromNow() }} </TableCell>
                 <TableCell>
-                  <img
-                    class="w-[50px] h-[45px] rounded-md object-cover border border-zinc-200 p-1"
-                    :src="foodMenu.image"
-                  />
+                  <div class="food-menu-image-container w-[50px] h-[45px] relative">
+                    <img
+                      class="h-full w-full rounded-md object-cover border border-zinc-200 p-1"
+                      :src="foodMenu.image"
+                    />
+                    <div
+                      class="food-menu-image-mask hidden w-[50px] h-[45px] justify-center items-center absolute top-0 left-0 bg-zinc-900 bg-opacity-[0.7] rounded-md"
+                    >
+                      <Edit
+                        :size="18"
+                        class="text-orange-600 cursor-pointer"
+                        @click="handleFoodMenuImageUpdate(foodMenu._id)"
+                      />
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell class="flex justify-center">
                   <Button variant="ghost">Edit</Button>
@@ -319,6 +338,12 @@ const handleDeleteMenu = (foodMenuId: string) => {
               </TableRow>
             </TableBody>
           </Table>
+
+          <UpdateMenuImageModal
+            :id="selectedFoodMenuId"
+            :open="openUpdateImageModal"
+            :onClose="() => (openUpdateImageModal = false)"
+          />
         </div>
       </div>
 
@@ -341,3 +366,9 @@ const handleDeleteMenu = (foodMenuId: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.food-menu-image-container:hover .food-menu-image-mask {
+  display: flex;
+}
+</style>
