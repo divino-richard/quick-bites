@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import dbConnect from './config/db';
 import authRouter from './routes/auth.router';
 import * as dotenv from 'dotenv';
-import merchantRoute from './routes/merchant.route';
+import merchantRouter from './routes/merchant.route';
 import { authorize } from './middleware/auth.middleware';
 import { User } from './types/user.types';
 import mainRouter from './routes/main.route';
@@ -12,6 +12,7 @@ import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
 import userRouter from './routes/user.router';
 import foodMenuRouter from './routes/foodMenu.router';
+import publicRouter from './routes/public.route';
 
 dotenv.config();
 
@@ -31,11 +32,12 @@ app.use('/uploads/', express.static(path.join(ROOT_DIRECTORY, '/src/uploads/')))
 
 app.use("/auth", authRouter);
 app.use('/api', mainRouter);
+app.use('/public', publicRouter);
 
-mainRouter.use('/merchant', authorize(['merchant']), merchantRoute);
+mainRouter.use('/merchant', authorize(['merchant']), merchantRouter);
 mainRouter.use('/user', authorize(['merchant', 'rider', 'customer']), userRouter);
 mainRouter.use('/foodMenu', authorize(['merchant', 'customer', 'admin']), foodMenuRouter);
-
+ 
 dbConnect();
 
 app.listen(PORT, () => {

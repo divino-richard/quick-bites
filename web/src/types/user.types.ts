@@ -9,6 +9,7 @@ export type UserType = 'admin' | 'rider' | 'merchant' | 'customer';
 export type RegistrationStatus = 'initial' | 'completed'
 
 export interface UserData {
+    id?: string,
     firstName: string;
     lastName: string;
     email: string;

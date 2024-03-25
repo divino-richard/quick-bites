@@ -5,9 +5,9 @@ import multer from 'multer';
 import { validationResult } from 'express-validator';
 import { businessLicenseUpload, taxRegistrationUpload } from '../utils/fileUpload.utils';
 
-const merchantRoute = express.Router();
+const merchantRouter = express.Router();
 
-merchantRoute.post(
+merchantRouter.post(
     '/registration/completion', 
     validateRegistrationCompletion,
     async (req: Request, res: Response) => {
@@ -20,7 +20,7 @@ merchantRoute.post(
     }
 );
 
-merchantRoute.post(
+merchantRouter.post(
     '/business-license', 
     (req: Request, res: Response) => {
         businessLicenseUpload(req, res, function (error) {
@@ -39,11 +39,11 @@ merchantRoute.post(
     }
 );
 
-merchantRoute.get('/business', (req: Request, res: Response) => {
+merchantRouter.get('/business', (req: Request, res: Response) => {
     getBusiness(req, res);
 });
 
-merchantRoute.post(
+merchantRouter.post(
     '/tax-registration', 
     (req: Request, res: Response) => {
         taxRegistrationUpload(req, res, function (error) {
@@ -62,4 +62,4 @@ merchantRoute.post(
     }
 );
 
-export default merchantRoute;
+export default merchantRouter;

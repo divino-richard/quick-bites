@@ -21,9 +21,27 @@ export async function addFoodMenu(req: Request, res: Response) {
     }
 }
 
+export async function getFoodMenus(req: Request, res: Response) {
+    try {
+        const { skip, limit} = req.params;
+
+        const foodMenus = await FoodMenu.find()
+            .sort({createdAt: 'desc'})
+            .skip(Number(skip))
+            .limit(Number(limit));
+
+        res.status(200).json(foodMenus);
+
+    } catch(error) {
+        res.status(500).json({
+            message: "Internal server error",   
+        })
+    }
+}
+
 export async function getFoodMenusByUserId(req: Request, res: Response) {
     try {
-        const userId = req.userData?.id;
+        const userId = req.params.userId;
         const foodMenus = await FoodMenu.find({userId}).sort({createdAt: 'desc'});
         res.status(200).json(foodMenus);
     } catch(error) {

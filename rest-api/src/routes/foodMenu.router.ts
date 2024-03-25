@@ -22,7 +22,7 @@ foodMenuRouter.post('/', (req: Request, res: Response) => {
     })
 });
 
-foodMenuRouter.get('/list', (req: Request, res: Response) => {
+foodMenuRouter.get('/list/:userId', (req: Request, res: Response) => {
     getFoodMenusByUserId(req, res);
 });
 
