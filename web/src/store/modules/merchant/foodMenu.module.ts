@@ -130,7 +130,6 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
             }
         },
         async updateItem({state, commit, dispatch}, foodMenu) {
-            console.log("D =>>", foodMenu)
             try {
                 state.updateItemLoading = true;
                 await api.put(`/api/foodMenu/${foodMenu.id}`, foodMenu.newData);

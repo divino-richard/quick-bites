@@ -4,5 +4,14 @@ export interface FoodMenu {
     description: string,
     price: number,
     category: string,
-    foodMenuImage: File
+    image?: File
+}
+
+export interface FoodMenuResponse {
+    id: string,
+    name: string,
+    description: string,
+    price: number,
+    category: string,
+    image: string
 }
