@@ -152,3 +152,15 @@ export async function updateFoodMenuImage(req: Request, res: Response) {
         })
     }
 } 
+
+export async function searchFoods (req: Request, res: Response) {
+    try {
+        const searchKey = req.params.key;
+        const foods = await FoodMenu.find().where('name').regex(new RegExp(searchKey));
+        res.status(200).json(foods);
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+}
