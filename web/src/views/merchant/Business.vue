@@ -27,7 +27,16 @@ import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vu
 import UpdateMenuImageModal from "@/components/merchant/UpdateMenuImageModal.vue";
 import UpdateFoodMenuModal from "@/components/merchant/UpdateFoodMenuModal.vue";
 import { FoodMenu } from "@/types/foodMenu.type";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Spinner from "@/components/ui/Spinner.vue";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -43,6 +52,13 @@ const deleteFoodMenuSuccess = computed(
   () => store.state.merchantFoodMenu.deleteItemSuccess
 );
 const deleteFoodMenuError = computed(() => store.state.merchantFoodMenu.deleteItemError);
+const updateStatusLoading = computed(
+  () => store.state.merchantFoodMenu.updateStatusLoading
+);
+const updateStatusError = computed(() => store.state.merchantFoodMenu.updateStatusError);
+const updateStatusSuccess = computed(
+  () => store.state.merchantFoodMenu.updateStatusSuccess
+);
 
 const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
 const selectedImageUrl = ref("");
@@ -51,6 +67,7 @@ const openUpdateImageModal = ref(false);
 const selectedFoodMenuId = ref("");
 const foodMenuToEdit = ref<FoodMenu | null>(null);
 const openUpdateFoodMenuModal = ref(false);
+const foodMenuToEditStatus = ref("");
 
 const { toast } = useToast();
 
@@ -105,6 +122,27 @@ watch(deleteFoodMenuSuccess, (deleteSuccess) => {
   }
 });
 
+watch(updateStatusError, (error) => {
+  if (error) {
+    toast({
+      title: error,
+      variant: "destructive",
+    });
+    store.commit("merchantFoodMenu/resetUpdateStatusError");
+  }
+});
+
+watch(updateStatusSuccess, (updateSuccess) => {
+  if (updateSuccess) {
+    toast({
+      title: "Status updated successfully",
+      variant: "default",
+      class: "text-[green]",
+    });
+    store.commit("merchantFoodMenu/toggleUpdateStatusSuccess");
+  }
+});
+
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
   store.dispatch("merchantFoodMenu/getFoodMenus");
@@ -141,10 +179,19 @@ const handleFoodMenuImageUpdate = (id: string) => {
   openUpdateImageModal.value = true;
   selectedFoodMenuId.value = id;
 };
+
+const handleStatusChange = (foodMenuId: string, status: string) => {
+  foodMenuToEditStatus.value = foodMenuId;
+  const data = {
+    id: foodMenuId,
+    status,
+  };
+  store.dispatch("merchantFoodMenu/updateStatus", data);
+};
 </script>
 
 <template>
-  <div class="w-full p-5">
+  <div class="flex-1 p-5 overflow-x-auto">
     <BusinessInfoSkeleton v-if="loadingBusiness" />
 
     <div v-else>
@@ -178,7 +225,7 @@ const handleFoodMenuImageUpdate = (id: string) => {
               <h1 class="text-[14px] font-medium">Menu List</h1>
             </div>
             <Button
-              class="text-[12px] h-[35px] py-[2px] bg-zinc-900"
+              class="text-[12px] py-[2px] bg-zinc-900"
               @click="() => (openAddFoodMenuModal = true)"
             >
               Add Menu
@@ -290,7 +337,11 @@ const handleFoodMenuImageUpdate = (id: string) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="(foodMenu, index) in foodMenus" :key="foodMenu._id">
+              <TableRow
+                v-for="(foodMenu, index) in foodMenus"
+                :key="foodMenu._id"
+                class="whitespace-nowrap"
+              >
                 <TableCell>{{ index + 1 }}</TableCell>
                 <TableCell class="font-medium">
                   {{ foodMenu.name }}
@@ -321,12 +372,35 @@ const handleFoodMenuImageUpdate = (id: string) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div 
-                    :class="{'bg-green-600' : foodMenu.status === 'available', 'bg-zinc-400' : foodMenu.status === 'unavailable'}"
-                    class="p-[5px] text-white text-[12px] rounded-md text-center"
+                  <Select
+                    v-model="foodMenu.status"
+                    @update:model-value="
+                      (status) => handleStatusChange(foodMenu._id, status)
+                    "
                   >
-                    {{ foodMenu.status.toUpperCase() }}
-                </div>
+                    <SelectTrigger
+                      :class="{
+                        'bg-green-200': foodMenu.status === 'available',
+                        'bg-zinc-200': foodMenu.status === 'unavailable',
+                      }"
+                      class="border-none"
+                    >
+                      <Spinner
+                        v-if="
+                          updateStatusLoading && foodMenu._id === foodMenuToEditStatus
+                        "
+                        :size="16"
+                      />
+                      <SelectValue :placeholder="foodMenu.status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel class="pl-2">Select status</SelectLabel>
+                        <SelectItem value="available"> Available </SelectItem>
+                        <SelectItem value="unavailable"> Unavailable </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell class="flex justify-center">
                   <Button variant="ghost" @click="handleEditFoodMenu(foodMenu)">
@@ -355,23 +429,6 @@ const handleFoodMenuImageUpdate = (id: string) => {
                       </div>
                     </PopoverContent>
                   </Popover>
-
-                  <Select>
-                    <SelectTrigger class="w-[100px] border-none">
-                      <SelectValue placeholder="Mark as" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel class="pl-2">Select status</SelectLabel>
-                        <SelectItem value="available" class="pl-2">
-                          Available
-                        </SelectItem>
-                        <SelectItem value="unavailable" class="pl-2">
-                          Unavailable
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
                 </TableCell>
               </TableRow>
             </TableBody>

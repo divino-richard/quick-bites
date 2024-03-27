@@ -21,6 +21,9 @@ export interface FoodMenuState {
     updateImageLoading: boolean;
     updateImageError: string;
     updateItemSuccess: boolean;
+    updateStatusLoading: boolean;
+    updateStatusError: string;
+    updateStatusSuccess: boolean;
 }
 
 const foodMenuModule: Module<FoodMenuState, RootState> = {
@@ -42,6 +45,9 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         updateImageLoading: false,
         updateImageError: "",
         updateItemSuccess: false,
+        updateStatusLoading: false,
+        updateStatusError: "",
+        updateStatusSuccess: false,
     } as FoodMenuState,
     mutations: {
         foodMenuAdded(state, foodMenu) {
@@ -75,6 +81,12 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
         },
         resetUpdateItemError(state) {
             state.updateItemError = "";
+        },
+        toggleUpdateStatusSuccess(state) {
+            state.updateStatusSuccess = !state.updateStatusSuccess;
+        },
+        resetUpdateStatusError(state) {
+            state.updateStatusError = "";
         }
     },
     actions: {
@@ -163,6 +175,22 @@ const foodMenuModule: Module<FoodMenuState, RootState> = {
                 state.updateImageError = "Something went wrong";
             } finally {
                 state.updateImageLoading = false;
+            }
+        },
+        async updateStatus ({state, commit, dispatch}, foodMenu) {
+            try {
+                state.updateStatusLoading = true;
+                await api.put(`/api/foodMenu/status/${foodMenu.id}`, { status: foodMenu.status});
+                commit('toggleUpdateStatusSuccess');
+                dispatch('getFoodMenus');
+            } catch (error) {
+                if(error instanceof AxiosError) {
+                    state.updateStatusError = error.response?.data.message;
+                    return;
+                }
+                state.updateStatusError = "Semthing went wrong";
+            } finally {
+                state.updateStatusLoading = false;
             }
         }
     },

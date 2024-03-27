@@ -58,7 +58,6 @@ const onSubmit = form.handleSubmit((newData) => {
     newData,
   };
   store.dispatch("merchantFoodMenu/updateItem", data);
-  console.log("Data =>> ", data);
 });
 
 watch(updateFoodMenuError, (error) => {
@@ -83,6 +82,7 @@ watch(updateFoodMenuSuccess, (success) => {
   }
 });
 </script>
+
 <template>
   <Dialog :open="props.open">
     <DialogContent :hideCloseButton="true">
@@ -94,7 +94,6 @@ watch(updateFoodMenuSuccess, (success) => {
         @submit="onSubmit"
         @change="() => (formValueChanged = true)"
         class="space-y-2"
-        enctype="multipart/form-data"
       >
         <FormField v-slot="{ componentField }" name="name">
           <FormItem>
@@ -153,7 +152,7 @@ watch(updateFoodMenuSuccess, (success) => {
         </FormField>
 
         <DialogFooter>
-          <Button variant="ghost" @click="props.onClose">Cancel</Button>
+          <Button variant="ghost" type="button" @click="props.onClose"> Cancel </Button>
           <Button
             type="submit"
             class="w-[100px]"
