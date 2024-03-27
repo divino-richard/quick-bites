@@ -12,6 +12,7 @@ export async function addFoodMenu(req: Request, res: Response) {
             ...req.body, 
             imageFileName: req.file?.filename,
             image:  `${process.env.BASE_URL}/uploads/${req.file?.filename}`,
+            status: 'available'
         });
         res.status(201).json(createdFoodMenu);
     } catch (error) {
@@ -41,7 +42,7 @@ export async function getFoodMenus(req: Request, res: Response) {
 
 export async function getFoodMenusByUserId(req: Request, res: Response) {
     try {
-        const userId = req.params.userId;
+        const userId = req.userData?.id;
         const foodMenus = await FoodMenu.find({userId}).sort({createdAt: 'desc'});
         res.status(200).json(foodMenus);
     } catch(error) {
@@ -156,11 +157,33 @@ export async function updateFoodMenuImage(req: Request, res: Response) {
 export async function searchFoods (req: Request, res: Response) {
     try {
         const searchKey = req.params.key;
-        const foods = await FoodMenu.find().where('name').regex(new RegExp(searchKey));
+        const foods = await FoodMenu.find().where('name').regex(new RegExp(searchKey, 'i'));
         res.status(200).json(foods);
     } catch (error) {
         res.status(500).json({
             message: "Internal server error"
-        })
+        });
+    }
+}
+
+export async function updateFoodMenuStatus(req: Request, res: Response) {
+    try {
+        const status = req.body.status;
+        const id = req.params.id;
+        
+        const updatedFoodMenu = await FoodMenu.findOneAndUpdate({ _id: id }, { status }, { new: true });
+        
+        if(!updatedFoodMenu) {
+            res.status(400).json({
+                message: "Can't find and update food menu"
+            });
+            return;
+        }
+
+        res.status(200).json(updatedFoodMenu);
+    } catch (error) {
+        res.status(200).json({
+            message: "Internal server error"
+        });
     }
 }

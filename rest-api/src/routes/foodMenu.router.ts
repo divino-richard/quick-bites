@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import foodMenuItemUpload from '../utils/fileUpload/foodMenuItem.utils';
-import { addFoodMenu, deleteFoodMenu, getFoodMenusByUserId, updateFoodMenu, updateFoodMenuImage } from '../controller/foodMenu.controller';
+import { addFoodMenu, deleteFoodMenu, getFoodMenusByUserId, updateFoodMenu, updateFoodMenuImage, updateFoodMenuStatus } from '../controller/foodMenu.controller';
 import { validateSchema } from '../validator';
 import { updateFoodMenuItemSchema } from '../validator/schemas/foodMenu.schema';
 
@@ -22,7 +22,7 @@ foodMenuRouter.post('/', (req: Request, res: Response) => {
     })
 });
 
-foodMenuRouter.get('/list/:userId', (req: Request, res: Response) => {
+foodMenuRouter.get('/list', (req: Request, res: Response) => {
     getFoodMenusByUserId(req, res);
 });
 
@@ -48,6 +48,10 @@ foodMenuRouter.put('/image/:id', (req: Request, res: Response) => {
 
         updateFoodMenuImage(req, res);
     })
+});
+
+foodMenuRouter.put('/status/:id', (req: Request, res: Response) => {
+    updateFoodMenuStatus(req, res);
 });
 
 export default foodMenuRouter;

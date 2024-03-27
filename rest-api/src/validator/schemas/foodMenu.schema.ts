@@ -6,3 +6,7 @@ export const updateFoodMenuItemSchema = z.object({
     price: z.number().min(50).nullish(),
     category: z.string().nullish(),
 }); 
+
+export const updateFoodMenuStatusSchema = z.object({
+    status: z.string()
+});
