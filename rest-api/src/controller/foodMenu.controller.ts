@@ -170,17 +170,18 @@ export async function updateFoodMenuStatus(req: Request, res: Response) {
     try {
         const status = req.body.status;
         const id = req.params.id;
-        
+
         const updatedFoodMenu = await FoodMenu.findOneAndUpdate({ _id: id }, { status }, { new: true });
         
         if(!updatedFoodMenu) {
             res.status(400).json({
-                message: "Can't find and update food menu"
+                message: "Can't find and update food menu",
             });
             return;
         }
 
         res.status(200).json(updatedFoodMenu);
+
     } catch (error) {
         res.status(200).json({
             message: "Internal server error"

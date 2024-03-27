@@ -27,6 +27,7 @@ import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vu
 import UpdateMenuImageModal from "@/components/merchant/UpdateMenuImageModal.vue";
 import UpdateFoodMenuModal from "@/components/merchant/UpdateFoodMenuModal.vue";
 import { FoodMenu } from "@/types/foodMenu.type";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -284,6 +285,7 @@ const handleFoodMenuImageUpdate = (id: string) => {
                 <TableHead> Category </TableHead>
                 <TableHead> Posted </TableHead>
                 <TableHead> Image </TableHead>
+                <TableHead class="text-center"> Status </TableHead>
                 <TableHead class="text-center"> Actions </TableHead>
               </TableRow>
             </TableHeader>
@@ -318,6 +320,14 @@ const handleFoodMenuImageUpdate = (id: string) => {
                     </div>
                   </div>
                 </TableCell>
+                <TableCell>
+                  <div 
+                    :class="{'bg-green-600' : foodMenu.status === 'available', 'bg-zinc-400' : foodMenu.status === 'unavailable'}"
+                    class="p-[5px] text-white text-[12px] rounded-md text-center"
+                  >
+                    {{ foodMenu.status.toUpperCase() }}
+                </div>
+                </TableCell>
                 <TableCell class="flex justify-center">
                   <Button variant="ghost" @click="handleEditFoodMenu(foodMenu)">
                     Edit
@@ -345,6 +355,23 @@ const handleFoodMenuImageUpdate = (id: string) => {
                       </div>
                     </PopoverContent>
                   </Popover>
+
+                  <Select>
+                    <SelectTrigger class="w-[100px] border-none">
+                      <SelectValue placeholder="Mark as" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel class="pl-2">Select status</SelectLabel>
+                        <SelectItem value="available" class="pl-2">
+                          Available
+                        </SelectItem>
+                        <SelectItem value="unavailable" class="pl-2">
+                          Unavailable
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
               </TableRow>
             </TableBody>
