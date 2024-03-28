@@ -40,6 +40,7 @@ const authModule: Module<AuthState, RootState> = {
             commit('setLoginLoading', true);
             try {
                 const response = await api.post('/auth/login', credentials);
+                console.log("Login ==>", response);
                 commit('setLoggedIn', response.data);
             } catch (error) {
                 if(error instanceof AxiosError) {
