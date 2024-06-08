@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useStore } from "@/store";
-import { computed } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserSession } from "@/types/user.types";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { RouterLink, useRoute } from "vue-router";
 import { LogOut } from "lucide-vue-next";
 import { MERCHANT_ROUTES } from "@/constants";
+import router from "@/router";
 
 const store = useStore();
 const route = useRoute();
@@ -16,6 +17,18 @@ const session = computed(() => store.getters["auth/getSession"]);
 const userSession: UserSession = session.value;
 const avatarFallback =
   userSession.userData.firstName[0] + " " + userSession.userData.lastName[0];
+
+watch(session, (session) => {
+  if (!session) {
+    router.replace("/auth/login");
+  }
+});
+
+onMounted(() => {
+  if (!session) {
+    router.replace("/auth/login");
+  }
+});
 </script>
 
 <template>

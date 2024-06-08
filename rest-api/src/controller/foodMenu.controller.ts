@@ -171,6 +171,13 @@ export async function updateFoodMenuStatus(req: Request, res: Response) {
         const status = req.body.status;
         const id = req.params.id;
 
+        if(!mongoose.isValidObjectId(id)) {
+            res.status(400).json({
+                message: "Invalid parameter"
+            });
+            return;
+        }
+
         const updatedFoodMenu = await FoodMenu.findOneAndUpdate({ _id: id }, { status }, { new: true });
         
         if(!updatedFoodMenu) {
@@ -183,7 +190,7 @@ export async function updateFoodMenuStatus(req: Request, res: Response) {
         res.status(200).json(updatedFoodMenu);
 
     } catch (error) {
-        res.status(200).json({
+        res.status(500).json({
             message: "Internal server error"
         });
     }

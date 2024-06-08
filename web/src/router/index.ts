@@ -7,11 +7,13 @@ import MerchantLayout from '@/views/merchant/Layout.vue';
 import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
+import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
+import CustomerLayout from "@/views/customer/Layout.vue";
 import MerchantBusiness from '@/views/merchant/Business.vue';
 import MerchantBusinessBraches from '@/views/merchant/Branches.vue';
 import MerchantSettings from '@/views/merchant/Settings.vue';
+import CustomerProfile from '@/views/customer/Profile.vue';
 import { checkRegistration } from "@/utils/user.utils";
-import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
 import BusinessInfo from "@/views/merchant/BusinessInfo.vue";
 
 const router = createRouter({
@@ -94,7 +96,18 @@ const router = createRouter({
                 }
             ],
         },
-        
+        {
+            path: '/customer',
+            name: 'customer-layout',
+            component: CustomerLayout,
+            children: [
+                {
+                    path: 'profile',
+                    name: 'customer-profile',
+                    component: CustomerProfile
+                }
+            ]
+        }
     ],
 })
 
