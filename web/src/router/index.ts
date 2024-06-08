@@ -7,11 +7,12 @@ import MerchantLayout from '@/views/merchant/Layout.vue';
 import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
-import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
 import MerchantBusiness from '@/views/merchant/Business.vue';
 import MerchantBusinessBraches from '@/views/merchant/Branches.vue';
 import MerchantSettings from '@/views/merchant/Settings.vue';
 import { checkRegistration } from "@/utils/user.utils";
+import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
+import BusinessInfo from "@/views/merchant/BusinessInfo.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -70,6 +71,11 @@ const router = createRouter({
                     path: 'business',
                     name: 'merchant-business',
                     component: MerchantBusiness,
+                },
+                {
+                    path: 'business/:id',
+                    name: 'merchant-business-info',
+                    component: BusinessInfo
                 },
                 {
                     path: "settings",

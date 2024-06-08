@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -17,12 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import api from "@/utils/api";
 import { toTypedSchema } from "@vee-validate/zod";
-import { AxiosError } from "axios";
 import { useForm } from "vee-validate";
 import { ArrowLeftIcon, Briefcase } from "lucide-vue-next";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import * as z from "zod";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
@@ -38,16 +36,13 @@ const createBusinessError = computed(
 );
 
 const business = computed(() => store.state.merchantBusiness.businessInfo);
-watch(business, (business) => {
+watch(business, () => {
   router.push("/merchant/business");
 });
 
 onMounted(() => {
   store.dispatch("merchantBusiness/fetchBusiness");
 });
-
-const submitLoading = ref(false);
-const submitError = ref("");
 
 const formSchema = toTypedSchema(
   z.object({

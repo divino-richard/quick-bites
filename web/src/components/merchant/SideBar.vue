@@ -41,7 +41,7 @@ const avatarFallback =
       <div
         v-for="routeItem in MERCHANT_ROUTES"
         class="flex items-center gap-x-2 px-5 : hover:text-orange-600"
-        :class="routeItem.name === String(route.name) ? 'text-orange-600' : 'text-white'"
+        :class="routeItem.name.includes(String(route.name)) ? 'text-orange-600' : 'text-white'"
       >
         <component :is="routeItem.icon" :size="18" class="" />
         <RouterLink :to="routeItem.link" class="text-[16px]">

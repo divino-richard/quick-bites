@@ -28,6 +28,7 @@ import UpdateMenuImageModal from "@/components/merchant/UpdateMenuImageModal.vue
 import UpdateFoodMenuModal from "@/components/merchant/UpdateFoodMenuModal.vue";
 import { FoodMenu } from "@/types/foodMenu.type";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RouterLink } from "vue-router";
 
 const store = useStore();
 const business = computed(() => store.getters["merchantBusiness/getBusinessInfo"]);
@@ -166,7 +167,9 @@ const handleFoodMenuImageUpdate = (id: string) => {
               class="mt-2 px-[5px] py-0 h-[35px] text-[12px] space-x-2"
             >
               <Store :size="14" class="text-orange-600" />
-              <span class="text-zinc-900">View Info</span>
+              <RouterLink :to="`./business/${business._id}`" class="text-zinc-900">
+                View Info
+              </RouterLink>
             </Button>
           </div>
         </div>

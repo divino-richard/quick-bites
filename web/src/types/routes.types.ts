@@ -4,5 +4,5 @@ export interface SidebarRoute {
     label: string;
     icon: FunctionalComponent;
     link: string;
-    name: string;
+    name: string[];
 }
