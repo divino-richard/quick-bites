@@ -9,7 +9,7 @@ const bankAccountSchema = new Schema({
     },
     name: String,
     holderName: String,
-    accountNumber: String,
+    accountNumber: Number,
 }, {
     timestamps: true
 })

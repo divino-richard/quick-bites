@@ -4,15 +4,16 @@ import bodyParser from 'body-parser';
 import dbConnect from './config/db';
 import authRouter from './routes/auth.router';
 import * as dotenv from 'dotenv';
-import merchantRouter from './routes/merchant.route';
 import { authorize } from './middleware/auth.middleware';
 import { User } from './types/user.types';
-import mainRouter from './routes/main.route';
+import mainRouter from './routes/main.router';
 import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
-import userRouter from './routes/user.router';
-import foodMenuRouter from './routes/foodMenu.router';
-import publicRouter from './routes/public.route';
+import publicRouter from './routes/publicmenu.router';
+import businessRouter from './routes/business.router';
+import menuRouter from './routes/menu.router';
+import uploadRouter from './routes/upload.router';
+import publicMenuRouter from './routes/publicmenu.router';
 
 dotenv.config();
 
@@ -30,13 +31,15 @@ declare module 'Express' {
 
 app.use('/uploads/', express.static(path.join(ROOT_DIRECTORY, '/src/uploads/')));
 
+// public routes
 app.use("/auth", authRouter);
-app.use('/api', mainRouter);
-app.use('/public', publicRouter);
+app.use('/menus', publicMenuRouter);
 
-mainRouter.use('/merchant', authorize(['merchant']), merchantRouter);
-mainRouter.use('/user', authorize(['merchant', 'rider', 'customer']), userRouter);
-mainRouter.use('/foodMenu', authorize(['merchant', 'customer', 'admin']), foodMenuRouter);
+// private routes
+app.use('/api', mainRouter);
+mainRouter.use('/business', authorize(['merchant']), businessRouter);
+mainRouter.use('/menus', menuRouter);
+mainRouter.use('/uploads', uploadRouter);
  
 dbConnect();
 

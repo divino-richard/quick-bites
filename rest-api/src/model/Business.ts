@@ -1,17 +1,16 @@
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
 
 const { Schema } = mongoose;
 
 const businessSchema = new Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
+    merchantId: {
+        type: Types.ObjectId,
         ref: 'User'
     },
     name: String,
-    businessType: String,
-    registrationNumber: String,
-    taxIdNumber: String,
-    address: String,
+    type: String,
+    registrationNumber: Number,
+    taxIdNumber: Number,
 }, {
     timestamps: true
 })
