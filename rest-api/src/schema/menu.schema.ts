@@ -3,14 +3,14 @@ import { z } from "zod";
 
 export const createMenuSchema = z.object({
   body: z.object({
-    businessId: z.string(),
+    restaurant: z.string(),
     name: z.string(),
     description: z.string(),
     price: z.object({
       currency: z.string(),
       value: z.number()
     }),
-    category: z.string(),
+    mealType: z.string(),
     status: z.string(),
     images: z.array(z.object({
       imageUrl: z.string(),
@@ -27,12 +27,17 @@ export const updateMenuSchema = z.object({
       currency: z.string(),
       value: z.number()
     }),
-    category: z.string(),
+    mealType: z.string(),
     status: z.string(),
     images: z.array(z.object({
       imageUrl: z.string(),
       fileName: z.string()
     }))
+  }),
+  params: z.object({
+    id: z.string().refine(id => isValidObjectId(id), {
+      message: 'Invalid menu id'
+    })
   })
 });
 
@@ -67,6 +72,14 @@ export const deleteMenuSchema = z.object({
   params: z.object({
     id: z.string().refine((id) => isValidObjectId(id), {
       message: 'Invalid menu id'
+    })
+  })
+})
+
+export const getRestaurantMenusSchema = z.object({
+  query: z.object({
+    rid: z.string().min(1).refine(id => isValidObjectId(id), {
+      message: 'Invalid restaurant id'
     })
   })
 })

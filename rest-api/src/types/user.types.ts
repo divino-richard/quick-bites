@@ -1,7 +1,7 @@
 export type UserType = 'admin' | 'merchant' | 'rider' | 'customer';
 export type RegistrationType = 'initial' | 'completed' | 'approved' | 'denied';
 export interface User {
-    id?: string,
+    _id?: string,
     firstName: string,
     lastName: string,
     middleName: string,

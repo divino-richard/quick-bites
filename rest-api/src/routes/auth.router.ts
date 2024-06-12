@@ -16,14 +16,14 @@ authRouter.post('/register', validateSchema(registerSchema), async (req: Request
       return res.status(400).json({message: "User already exist"})
     }
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const createdUser = await createUser({
+    await createUser({
       ...req.body, 
+      userType: 'customer',
       password: hashedPassword,
-      registrationStatus: 'initial'
     });
-    const responseData = createdUser.toObject({virtuals: true});
-    delete responseData.password;
-    res.status(200).json(responseData);
+    res.status(200).json({
+      message: 'User registered successfully'
+    });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -45,8 +45,14 @@ authRouter.post('/login', validateSchema(loginSchmea), async (req: Request, res:
     if(!secreteKey) {
       throw new Error('Missing jwt private key');
     }
-    const payload = user.toObject({virtuals:true});
-    delete payload.password;
+    const payload = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      userType: user.userType,
+      avatar: user.avatar
+    };
     jwt.sign(
       payload,
       secreteKey,

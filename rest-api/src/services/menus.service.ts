@@ -1,54 +1,38 @@
 import { Types } from "mongoose";
 import { MenuModel } from "../model/Menu";
-import { param } from "express-validator";
 
-export async function getMenusByBusinessId(businessId: string) {
-  return await MenuModel.aggregate([
-    {
-      $match: {
-        businessId: new Types.ObjectId(businessId)
-      },
-    },
-    {
-      $lookup: {
-        from: 'menuimages',
-        localField: '_id',
-        foreignField: 'menuId',
-        as: 'images'
-      }
-    }
-  ]);
+interface IGetRestaurantMenus {
+  restaurant: string;
+}
+export async function getRestaurantMenus(params: IGetRestaurantMenus) {
+  const { restaurant } = params;
+  return await MenuModel.find({ restaurant });
 }
 
-export async function getMenuById(id: string) {
-  return await MenuModel.aggregate([
-    {
-      $match: {
-        _id: new Types.ObjectId(id)
-      },
-    },
-    {
-      $lookup: {
-        from: 'menuimages',
-        localField: '_id',
-        foreignField: 'menuId',
-        as: 'images'
-      }
-    }
-  ]);
+interface IGetMenuById {
+  id: string;
+}
+export async function getMenuById(params: IGetMenuById) {
+  const { id } = params;
+  return await MenuModel.findById(id);
 }
 
 interface IPrice {
   currency: string;
   value: number;
 }
+interface IMenuImage {
+  imageUrl: string;
+  fileName: string;
+}
 interface ICreateMenu {
-  businessId: string;
+  restaurant: string;
   name: string;
   description: string;
   price: IPrice;
-  category: string;
+  mealType: string;
   status: string;
+  images: IMenuImage[]
 }
 export async function createMenu(params: ICreateMenu) {
   return await MenuModel.create(params);
@@ -59,8 +43,9 @@ interface IUpdateMenu {
   name: string;
   description: string;
   price: IPrice;
-  category: string;
+  mealType: string;
   status: string;
+  images: IMenuImage[]
 }
 export async function updateMenuById(params: IUpdateMenu) {
   const { menuId, ...menu} = params;
@@ -71,8 +56,21 @@ export async function updateMenuById(params: IUpdateMenu) {
   );
 }
 
-export async function deleteMenu(menuId: string) {
-  return await MenuModel.findByIdAndDelete(menuId);
+interface IUpdateMenuStatus {
+  menuId: string;
+  status: string;
+}
+export async function updateMenuStatus(params: IUpdateMenuStatus) {
+  const { menuId, status } = params;
+  return await MenuModel.findByIdAndUpdate(menuId, { status }, { new: true });
+}
+
+interface IDeleteMenu {
+  id: string;
+}
+export async function deleteMenu(params: IDeleteMenu) {
+  const { id } = params;
+  return await MenuModel.findByIdAndDelete(id);
 }
 
 interface IGetMenus {
@@ -81,58 +79,15 @@ interface IGetMenus {
 }
 export async function getMenus(params: IGetMenus) {
   const { skip, limit } = params;
-  return await MenuModel.aggregate([
-    {
-      $facet: {
-        data: [
-          {
-            $lookup: {
-              from: 'menuimages',
-              localField: '_id',
-              foreignField: 'menuId',
-              as: 'images'
-            }
-          },
-          {
-            $skip: skip || 0,
-          },
-          {
-            $limit: limit || 10,
-          }
-        ],
-        totalCount: [
-          {
-            $count: 'count'
-          }
-        ]
-      }
-    },
-    {
-      $project: {
-        data: 1,
-        totalCount: { $arrayElemAt: ['$totalCount.count', 0]}
-      }
-    }
-  ]);
+  const data = await MenuModel.find().skip(Number(skip)).limit(Number(limit));
+  const totalCount = await MenuModel.countDocuments();
+  return { data, totalCount }
 }
 
-export async function searchMenu(keyword: string) {
-  return await MenuModel.aggregate([
-    {
-      $match: {
-        name: { $regex: keyword, $options: 'i' }
-      }
-    },
-    {
-      $lookup: {
-        from: 'menuimages',
-        localField: '_id',
-        foreignField: 'menuId',
-        as: 'images'
-      }
-    },
-    {
-      $limit: 10,
-    }
-  ])
+interface ISearchMenu {
+  keyword: string;
+}
+export async function searchMenu(params: ISearchMenu) {
+  const { keyword } = params;
+  return await MenuModel.find({ name: new RegExp(keyword, 'i')})
 }

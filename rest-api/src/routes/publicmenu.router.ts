@@ -15,7 +15,7 @@ publicMenuRouter.get('/', validateSchema(getPublicMenusSchema), async(req: Reque
     if(!menus) return res.status(400).json({
       message: 'Failed to get menus'
     });
-    res.status(200).json(menus[0]);
+    res.status(200).json(menus);
   } catch (error) {
     console.log(error)
     res.status(500).json(error)
@@ -25,7 +25,7 @@ publicMenuRouter.get('/', validateSchema(getPublicMenusSchema), async(req: Reque
 publicMenuRouter.get('/search', validateSchema(searchPublicMenuSchema), async(req: Request, res: Response) => {
   try {
     const { keyword } = req.query;
-    const menus = await searchMenu(String(keyword));
+    const menus = await searchMenu({keyword: String(keyword)});
     if(!menus) return res.status(400).json({
       message: 'Failed to search menus'
     });

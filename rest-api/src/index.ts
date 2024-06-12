@@ -10,7 +10,7 @@ import mainRouter from './routes/main.router';
 import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
 import publicRouter from './routes/publicmenu.router';
-import businessRouter from './routes/business.router';
+import restaurantRouter from './routes/restaurant.router';
 import menuRouter from './routes/menu.router';
 import uploadRouter from './routes/upload.router';
 import publicMenuRouter from './routes/publicmenu.router';
@@ -37,7 +37,7 @@ app.use('/menus', publicMenuRouter);
 
 // private routes
 app.use('/api', mainRouter);
-mainRouter.use('/business', authorize(['merchant']), businessRouter);
+mainRouter.use('/restaurants', authorize(['merchant']), restaurantRouter);
 mainRouter.use('/menus', menuRouter);
 mainRouter.use('/uploads', uploadRouter);
  

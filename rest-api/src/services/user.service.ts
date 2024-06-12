@@ -11,7 +11,6 @@ interface ICreateUser {
   userType: string;
   email: string;
   password: string;
-  registrationStatus: string;
 }
 export async function createUser(params: ICreateUser) {
   return await UserModel.create(params);
