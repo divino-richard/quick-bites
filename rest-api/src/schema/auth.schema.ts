@@ -4,10 +4,7 @@ export const registerSchema = z.object({
   body: z.object({
     firstName: z.string(),
     lastName: z.string(),
-    phoneNumber: z.object({
-      code: z.string(),
-      value: z.number()
-    }),
+    phoneNumber: z.string(),
     email: z.string().email(),
     password: z.string().min(8).refine((password: string) => {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;

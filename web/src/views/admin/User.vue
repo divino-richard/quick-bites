@@ -1,70 +1,60 @@
 
 <script setup lang="ts">
-import SideBar from '@/components/admin/SideBar.vue';
-import AddMerchantModal from '@/components/admin/AddMerchantModal.vue';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { UserType } from '@/types/user.types';
-import { ref } from "vue";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useStore } from '@/store';
+import { computed, onMounted } from "vue";
 
-let showAddMerchantModal = ref(false);
-let showAddRiderModal = ref(false);
+const store = useStore();
 
-const handleAddUser = (user: UserType) => {
-    switch(user) {
-        case 'merchant':
-            showAddMerchantModal.value = true;
-            break;
-        case 'rider':
-            showAddRiderModal.value = true;
-            break;
-    }
-}
+const users = computed(() => store.state.user.items);
+// const loadingUsers = computed(() => store.state.user.getItemsLoading);
+// const getUsersError = computed(() => store.state.user.getItemsError);
 
-
+onMounted(() => {
+  store.dispatch('user/getItems', { skip: 0, limit: 10 });
+});
 </script>
 
 <template>
-    <div className="flex w-full h-screen bg-zinc-900">
-        <SideBar />
-        <div className="flex-1 p-5">
-            <div className="flex justify-between items-center">
-                <h1 className="text-white">User List</h1>
-                
-                <DropdownMenu>
-                    <DropdownMenuTrigger 
-                        type="button"
-                        className="bg-green-600 text-white font-semibold px-5 py-2 rounded-sm text-sm"
-                    >
-                        New
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>New user</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                            @click="handleAddUser('rider')"
-                        >
-                            Rider
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                            @click="handleAddUser('merchant')"
-                        >
-                            Merchant
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-
-            <AddMerchantModal 
-                :show="showAddMerchantModal" 
-                :onUpdateOpen="(value) => showAddMerchantModal = value"
-            />
-        </div>
-    </div>
+  <div className="p-5">
+    <Table>
+      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead class="w-[100px]">
+            #
+          </TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Phone #</TableHead>
+          <TableHead>
+            Type
+          </TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow v-for="(user, index) in users?.data">
+          <TableCell class="font-medium">
+            {{ index + 1 }}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ user.firstName + ' ' + user.lastName}}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ user.phoneNumber }}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ user.userType }}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ user.email }}
+          </TableCell>
+          <TableCell class="font-medium">
+            <Button>Edit</Button>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  </div>
 </template>

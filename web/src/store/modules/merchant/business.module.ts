@@ -56,10 +56,7 @@ const businessModule: Module<BusinessState, RootState>  = {
         async createBusiness ({state, commit, dispatch}, business) {
             state.loadingCreateBusiness = true;
             try {
-                await api.post(
-                    "/api/merchant/registration/completion", 
-                    business
-                );
+                await api.post("/api/business", business);
                 dispatch('fetchBusiness');
             } catch (error) {
                 if (error instanceof AxiosError) {

@@ -9,11 +9,11 @@ import { User } from './types/user.types';
 import mainRouter from './routes/main.router';
 import { ROOT_DIRECTORY } from '../_dirname';
 import path from 'path';
-import publicRouter from './routes/publicmenu.router';
 import restaurantRouter from './routes/restaurant.router';
 import menuRouter from './routes/menu.router';
 import uploadRouter from './routes/upload.router';
 import publicMenuRouter from './routes/publicmenu.router';
+import userRouter from './routes/user.router';
 
 dotenv.config();
 
@@ -24,9 +24,9 @@ app.use(cors());
 app.use(bodyParser.json());
 
 declare module 'Express' {
-    interface Request {
-        userData?: User;
-    }
+  interface Request {
+    userData?: User;
+  }
 }
 
 app.use('/uploads/', express.static(path.join(ROOT_DIRECTORY, '/src/uploads/')));
@@ -40,6 +40,7 @@ app.use('/api', mainRouter);
 mainRouter.use('/restaurants', authorize(['merchant']), restaurantRouter);
 mainRouter.use('/menus', menuRouter);
 mainRouter.use('/uploads', uploadRouter);
+mainRouter.use('/users', authorize(['admin']), userRouter);
  
 dbConnect();
 

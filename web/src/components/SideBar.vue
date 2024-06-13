@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { useStore } from "@/store";
-import { computed, onMounted, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserSession } from "@/types/user.types";
 import { Separator } from "@/components/ui/separator";
 import { RouterLink, useRoute } from "vue-router";
 import { LogOut } from "lucide-vue-next";
-import { MERCHANT_ROUTES } from "@/constants";
+import { ADMIN_ROUTES, MERCHANT_ROUTES } from "@/constants";
 import router from "@/router";
+import { useStore } from "@/store";
+import { SidebarRoute } from "@/types/routes.types";
 
 const store = useStore();
 const route = useRoute();
 
+const sideBarMenus = ref<SidebarRoute[]>([]);
 const session = computed(() => store.getters["auth/getSession"]);
 const userSession: UserSession = session.value;
-const avatarFallback =
-  userSession.userData.firstName[0] + " " + userSession.userData.lastName[0];
+const avatarFallback = userSession.userData.firstName[0] + " " + userSession.userData.lastName[0];
 
 watch(session, (session) => {
   if (!session) {
@@ -28,6 +29,15 @@ onMounted(() => {
   if (!session) {
     router.replace("/auth/login");
   }
+  const { userData } = session.value;
+  switch(userData.userType) {
+    case 'admin':
+      sideBarMenus.value = ADMIN_ROUTES;
+      break;
+    case 'merchant':
+      sideBarMenus.value = MERCHANT_ROUTES;
+      break;
+  } 
 });
 </script>
 
@@ -50,15 +60,15 @@ onMounted(() => {
       </div>
     </div>
     <Separator class="bg-zinc-800" />
-    <div class="space-y-2 py-2">
+    <div class="space-y-[15px] py-2">
       <div
-        v-for="routeItem in MERCHANT_ROUTES"
+        v-for="item in sideBarMenus"
         class="flex items-center gap-x-2 px-5 : hover:text-orange-600"
-        :class="routeItem.name.includes(String(route.name)) ? 'text-orange-600' : 'text-white'"
+        :class="item.name.includes(String(route.name)) ? 'text-orange-600' : 'text-white'"
       >
-        <component :is="routeItem.icon" :size="18" class="" />
-        <RouterLink :to="routeItem.link" class="text-[16px]">
-          {{ routeItem.label }}
+        <component :is="item.icon" :size="18" class="" />
+        <RouterLink :to="item.link" class="text-[16px]">
+          {{ item.label }}
         </RouterLink>
       </div>
     </div>

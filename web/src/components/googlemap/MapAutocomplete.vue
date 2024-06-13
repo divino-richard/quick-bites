@@ -4,13 +4,17 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { onMounted, ref } from "vue";
 import { Input } from '../ui/input';
 
-const center = ref({ lat: 34.082298, lng: -82.284777 });
+const emits = defineEmits(['changeCenter', 'changeAddress']);
+
+const center = ref({ lat: 14.599512, lng: 120.984222 });
+
 const defaultBounds = {
   north: center.value.lat + 0.1,
   south: center.value.lat - 0.1,
   east: center.value.lng + 0.1,
   west: center.value.lng - 0.1,
 };
+
 const options = {
   bounds: defaultBounds,
   types: ["establishment"],
@@ -31,21 +35,24 @@ onMounted(async () => {
 
   autocomplete.addListener('place_changed', () => {
     const place = autocomplete.getPlace();
-    const { location } = place.geometry
-    center.value = {
+    const { location } = place.geometry;
+    const latLng = {
       lat: location.lat(),
       lng: location.lng()
     }
+    center.value = latLng;
+    emits('changeCenter', latLng)
+    emits('changeAddress', place.formatted_address);
   });
 });
 </script>
 
 <template>
-  <div class="py-5 space-y-2">
-    <Input id="place" type="text" placeholder="Enter a location" />
+  <div class="space-y-2">
+    <Input id="place" type="text" placeholder="Find address" />
     <Map
       :center="center"
-      @locationChange="(location) => console.log('Loc', location)"
+      @locationChange="(location) => emits('changeCenter', location)"
     />
   </div>
 </template>

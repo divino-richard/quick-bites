@@ -4,17 +4,16 @@ import Register from '@/views/auth/Register.vue';
 import Login from '@/views/auth/Login.vue';
 import MerchantDashboard from '@/views/merchant/Dashboard.vue';
 import MerchantLayout from '@/views/merchant/Layout.vue';
-import MerchantRegistration from '@/views/auth/MerchantRegistration.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
 import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
 import CustomerLayout from "@/views/customer/Layout.vue";
+import MerchantBusinesses from '@/views/merchant/Businesses.vue';
 import MerchantBusiness from '@/views/merchant/Business.vue';
 import MerchantBusinessBraches from '@/views/merchant/Branches.vue';
 import MerchantSettings from '@/views/merchant/Settings.vue';
 import CustomerProfile from '@/views/customer/Profile.vue';
-import { checkRegistration } from "@/utils/user.utils";
-import BusinessInfo from "@/views/merchant/BusinessInfo.vue";
+import AdminLayout from "@/views/admin/Layout.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -30,30 +29,29 @@ const router = createRouter({
             component: Register,
         },
         {
-            path: '/auth/register/merchant',
-            name: 'merchant-registration',
-            component: MerchantRegistration,
-        },
-        {
             path: '/auth/login',
             name: 'login',
             component: Login
         },
         {
             path: '/admin',
-            name: 'admin-dashboard',
-            component: AdminDashboard,
+            name: 'admin-layout',
+            component: AdminLayout,
             meta: {
                 authorize: ['admin']
-            }
-        },
-        {
-            path: '/admin/user',
-            name: 'user',
-            component: User,
-            meta: {
-                authorized: ['admin']
-            }
+            },
+            children: [
+                {
+                    path: "",
+                    name: 'admin-dashboard',
+                    component: AdminDashboard,
+                },
+                {
+                    path: '/admin/users',
+                    name: 'admin-users',
+                    component: User,
+                },
+            ]
         },
         {   
             path: '/merchant',
@@ -62,7 +60,6 @@ const router = createRouter({
             meta: {
                 authorize: ['merchant']
             },
-            // beforeEnter: checkRegistration
             children: [
                 {
                     path: "",
@@ -72,12 +69,12 @@ const router = createRouter({
                 {
                     path: 'business',
                     name: 'merchant-business',
-                    component: MerchantBusiness,
+                    component: MerchantBusinesses,
                 },
                 {
                     path: 'business/:id',
                     name: 'merchant-business-info',
-                    component: BusinessInfo
+                    component: MerchantBusiness
                 },
                 {
                     path: "settings",

@@ -10,34 +10,41 @@ import { ref, computed, watch } from "vue";
 import { Credentials } from "../../types/user.types";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
+import { useToast } from "@/components/ui/toast";
+import { getSession } from "@/utils/session.utils";
 
 const store = useStore();
 const router = useRouter();
+const { toast } = useToast();
 
-const loginLoading = computed(() => store.state.auth.loginLoading);
+const showPassword = ref(false);
+
+const loginPending = computed(() => store.state.auth.loginPending);
 const loginError = computed(() => store.state.auth.loginError);
-const session = computed(() => store.state.auth.session);
+const loginSuccess = computed(() => store.state.auth.loginSuccess);
 
-watch(session, (sessionData) => {
-  if (sessionData) {
-    switch (sessionData.userData.userType) {
-      case "admin":
-        router.push("/admin");
-        break;
-      case "merchant":
-        router.push("/merchant");
-        break;
-      case "rider":
-        router.push("/rider");
-        break;
-      case "customer":
-        router.push("/");
-        break;
-    }
+watch(loginSuccess, (success) => {
+  if(success) {
+    toast({
+      title: 'Logged in successfully',
+      variant: 'default'
+    });
+    const session = getSession();
+    redirectUser(session?.userData.userType ?? '');
+    store.commit('auth/loginSuccess', false);
   }
 });
 
-let showPassword = ref(false);
+watch(loginError, (error) => {
+  if(error) {
+    toast({
+      title: error,
+      variant: 'destructive'
+    });
+    store.commit('auth/loginError', '');
+  }
+});
+
 const formSchema = toTypedSchema(
   z.object({
     email: z.string().min(2),
@@ -56,16 +63,29 @@ const onSubmit = form.handleSubmit(async (data: Credentials) => {
 const togglePassword = (checked: boolean) => {
   showPassword.value = checked;
 };
+
+const redirectUser = (userType: string) => {
+  switch (userType) {
+    case "admin":
+      router.push("/admin");
+      break;
+    case "merchant":
+      router.push("/merchant");
+      break;
+    case "rider":
+      router.push("/rider");
+      break;
+    case "customer":
+      router.push("/");
+      break;
+  }
+}
 </script>
 
 <template>
   <div className="flex h-screen items-center justify-center px-8">
     <form @submit="onSubmit" className="flex flex-col w-full max-w-[400px] gap-y-5">
       <h1 className="text-lg font-bold">Log In</h1>
-
-      <p v-if="loginError" className="text-red-500 font-semibold text-sm text-center">
-        {{ loginError }}
-      </p>
 
       <FormField v-slot="{ componentField }" name="email">
         <FormItem>
@@ -99,8 +119,8 @@ const togglePassword = (checked: boolean) => {
         </label>
       </div>
 
-      <Button type="submit" :disabled="loginLoading">
-        {{ loginLoading ? "Loading..." : "Login" }}
+      <Button type="submit" :disabled="loginPending">
+        {{ loginPending ? "Loading..." : "Login" }}
       </Button>
     </form>
   </div>

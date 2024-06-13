@@ -1,11 +1,16 @@
 import { InjectionKey } from 'vue';
 import { createStore, useStore as baseUseStore,  Store } from 'vuex';
-import authModule, { AuthState } from './modules/auth.module';
-import merchantBusiness, { BusinessState } from './modules/merchant/business.module';
-import foodMenu, { FoodMenuState } from './modules/merchant/foodMenu.module';
 import api from '@/utils/api';
 import { AxiosError } from 'axios';
-import { FoodMenu, FoodMenuResponse } from '@/types/foodMenu.type';
+import { FoodMenuResponse } from '@/types/foodMenu.type';
+import { BusinessState } from './modules/business/state';
+import businessModule from './modules/business';
+import { MenuState } from './modules/menu/state';
+import menuModule from './modules/menu';
+import { AuthState } from './modules/auth/state';
+import authModule from './modules/auth';
+import userModule from './modules/user';
+import { UserState } from './modules/user/state';
 
 export interface RootState {
     networkError: string,
@@ -13,8 +18,9 @@ export interface RootState {
     getFoodMenuError: string,
     getFoodMenuLoading: boolean,
     auth: AuthState,
-    merchantBusiness: BusinessState,
-    merchantFoodMenu: FoodMenuState,
+    business: BusinessState,
+    menu: MenuState,
+    user: UserState
 }
 
 export const key: InjectionKey<Store<RootState>> = Symbol();
@@ -22,8 +28,9 @@ export const key: InjectionKey<Store<RootState>> = Symbol();
 export const store: Store<RootState> = createStore<RootState>({
     modules: {
         auth: authModule,
-        merchantBusiness: merchantBusiness,
-        merchantFoodMenu: foodMenu,
+        business: businessModule,
+        menu: menuModule,
+        user: userModule
     },
     state: {
         networkError: '',

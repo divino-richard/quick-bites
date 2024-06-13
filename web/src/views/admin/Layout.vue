@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import SideBar from "@/components/SideBar.vue";
+import { useToast } from "@/components/ui/toast";
 import { useStore } from "@/store";
 import { computed, watch } from "vue";
 import { RouterView } from "vue-router";
-import { useToast } from "@/components/ui/toast/use-toast";
-import SideBar from "@/components/SideBar.vue";
 
 const { toast } = useToast();
 
@@ -25,6 +25,8 @@ watch(networkError, (error) => {
 <template>
   <div class="min-h-screen flex">
     <SideBar />
-    <RouterView class="flex-1" />
+    <div class="flex-1">
+      <RouterView class="flex-1" />
+    </div>
   </div>
 </template>

@@ -5,183 +5,167 @@ import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/ui/form'
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ref } from 'vue'
-import api from '@/utils/api'
+import { computed, ref, watch } from 'vue'
+import { useStore } from '@/store'
+import { useToast } from '@/components/ui/toast'
 import { useRouter } from 'vue-router'
+
+const store = useStore();
+const { toast } = useToast();
+const router = useRouter();
+
+const countryCodes = ['+63'];
 
 const showPasswords = ref(false);
 const registrationError = ref('');
-const registerLoading = ref(false);
 
-const router = useRouter();
+const registerPending = computed(() => store.state.auth.registerPending);
+const registerSuccess = computed(() => store.state.auth.registerSuccess);
+const registerError = computed(() => store.state.auth.registerError);
 
 const formSchema = toTypedSchema(z.object({
-    firstName: z.string().min(2).max(50),
-    lastName: z.string().min(2).max(50),
-    phoneNumber: z.number().min(2),
-    userType: z.string().min(2).max(50),
-    email: z.string().min(2).max(50),
-    password: z.string().min(2).max(50),
-    confirmPassword: z.string().min(2).max(50),
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
+  phoneNumber: z.number(),
+  email: z.string().email(),
+  password: z.string().min(2).max(50),
+  confirmPassword: z.string().min(2).max(50),
 }))
 
 const form = useForm({
-    validationSchema: formSchema,
+  validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit((user) => {
-    if(user.password !== user.confirmPassword) {
-        return registrationError.value = 'Passwords are not the same!';
-    }
+const onSubmit = form.handleSubmit((data) => {
+  if(data.password !== data.confirmPassword) {
+    return registrationError.value = 'Passwords are not the same!';
+  }
 
-    registerLoading.value = true;
+  store.dispatch('auth/register', { 
+    ...data, 
+    phoneNumber: countryCodes[0] + data.phoneNumber
+  });
+});
 
-    api.post('/auth/register', {...user, phoneNumber: user.phoneNumber.toString()})
-        .then(() => {
-            router.push('/auth/login')
-        })
-        .catch((error) => {
-            registrationError.value = error.response?.data?.message
-        })
-        .finally(() => {
-            registerLoading.value = false;
-        });
-})
+watch(registerError, (error: string) => {
+  if(error) {
+    toast({
+      title: error,
+      variant: "destructive",
+    });
+    store.commit('auth/registerError', '');
+  }
+});
 
+watch(registerSuccess, (success: boolean) => {
+  if(success) {
+    toast({
+      title: "Registered successfully",
+      variant: "default",
+    });
+    store.commit('auth/registerSuccess', false);
+    router.replace('./login');
+  }
+});
 </script>
 
 <template>
-    <div className="w-full max-w-[500px] m-auto my-10">
-        <h1 className="text-lg font-bold mb-5">Register Account</h1>
+  <div class="w-full h-screen flex justify-center items-center">
+    <form @submit="onSubmit" className="flex w-full max-w-[500px] mx-5 flex-col gap-y-5">
+        <h1 className="text-lg font-bold">Register Account</h1>
 
         <p v-if="registrationError" 
-            class="text-red-500 font-semibold text-sm text-center py-5"
+          class="text-red-500 font-semibold text-sm text-center py-5"
         >
-            {{ registrationError }}
+          {{ registrationError }}
         </p>
 
-        <form @submit="onSubmit" className="flex flex-col gap-y-5">
-            <div className="flex gap-x-5 w-full">
-                <FormField v-slot="{ componentField }" name="firstName">
-                    <FormItem  className="flex-1">
-                        <FormLabel>First name</FormLabel>
-                        <FormControl>
-                            <Input type="text" placeholder="First name" v-bind="componentField" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                </FormField>
-
-                <FormField v-slot="{ componentField }" name="lastName">
-                    <FormItem  className="flex-1">
-                        <FormLabel>Last name</FormLabel>
-                        <FormControl>
-                            <Input type="text" placeholder="Last name" v-bind="componentField" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                </FormField>
-            </div>
-
-            <FormField v-slot="{ componentField }" name="phoneNumber">
-                <FormItem>
-                    <FormLabel>Phone number</FormLabel>
+        <div className="flex gap-x-5 w-full">
+            <FormField v-slot="{ componentField }" name="firstName">
+                <FormItem  className="flex-1">
+                    <FormLabel>First name</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="Phone number" v-bind="componentField" />
+                      <Input type="text" placeholder="First name" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="email">
-                <FormItem>
-                    <FormLabel>Email</FormLabel>
+            <FormField v-slot="{ componentField }" name="lastName">
+                <FormItem  className="flex-1">
+                    <FormLabel>Last name</FormLabel>
                     <FormControl>
-                        <Input type="email" placeholder="email" v-bind="componentField" />
+                      <Input type="text" placeholder="Last name" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
             </FormField>
+        </div>
 
-            <FormField v-slot="{ componentField }" name="userType">
-                <FormItem>
-                    <FormLabel>Register type</FormLabel>
-                    <Select v-bind="componentField">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select registration type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Register types</SelectLabel>
-                                <SelectItem value="customer">
-                                    Customer
-                                </SelectItem>
-                                <SelectItem value="rider">
-                                    Rider
-                                </SelectItem>
-                                <SelectItem value="merchant">
-                                    Merchant
-                                </SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
+        <FormField v-slot="{ componentField }" name="phoneNumber">
+            <FormItem>
+                <FormLabel>Phone number</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="Phone number" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
 
-            <FormField v-slot="{ componentField }" name="password">
-                <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                        <Input :type="showPasswords ? 'text' : 'password'" placeholder="password" v-bind="componentField" />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
+        <FormField v-slot="{ componentField }" name="email">
+            <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="email" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
 
-            <FormField v-slot="{ componentField }" name="confirmPassword">
-                <FormItem>
-                    <FormLabel>Confirm password</FormLabel>
-                    <FormControl>
-                        <Input :type="showPasswords ? 'text' : 'password'" placeholder="Confirm password" v-bind="componentField" />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
+        <FormField v-slot="{ componentField }" name="password">
+            <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input :type="showPasswords ? 'text' : 'password'" placeholder="password" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
 
-            <div class="flex items-center space-x-2">
-                <Checkbox 
-                    id="showPassword" 
-                    @update:checked="(value) => showPasswords = value"
-                />
-                <label
-                    for="showPassword"
-                    class="text-sm font-medium"
-                >
-                    Show passwords
-                </label>
-            </div>
+        <FormField v-slot="{ componentField }" name="confirmPassword">
+            <FormItem>
+                <FormLabel>Confirm password</FormLabel>
+                <FormControl>
+                  <Input :type="showPasswords ? 'text' : 'password'" placeholder="Confirm password" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
 
-            <Button type="submit" :disabled="registerLoading">
-                {{ registerLoading ? 'Loading...' : 'Register' }}
-            </Button>
-        </form>
-    </div>  
+        <div class="flex items-center space-x-2">
+            <Checkbox 
+              id="showPassword" 
+              @update:checked="(value) => showPasswords = value"
+            />
+            <label
+              for="showPassword"
+              class="text-sm font-medium"
+            >
+              Show passwords
+            </label>
+        </div>
+
+        <Button type="submit" :disabled="registerPending">
+          {{ registerPending ? 'Loading...' : 'Register' }}
+        </Button>
+    </form>
+  </div>
 </template>

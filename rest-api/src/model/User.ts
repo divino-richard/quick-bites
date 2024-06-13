@@ -29,14 +29,8 @@ const userSchema = new Schema({
     required: true,
   },
   phoneNumber: {
-    code: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: Number,
-      required: true
-    }
+    type: String,
+    rquired: true
   },
   userType: {
     type: String,
