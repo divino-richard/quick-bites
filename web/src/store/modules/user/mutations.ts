@@ -5,15 +5,18 @@ const userMutations: MutationTree<UserState> = {
   createSuccess(state, success: boolean) {
     state.createSuccess = success;
   },
-  createError(state, error: string) {
-    state.createError = error;
+  updateSuccess(state, success: boolean) {
+    state.updateSuccess = success;
+  },
+  deleteSuccess(state, success: boolean) {
+    state.deleteSuccess = success;
+  },
+  error(state, error: string) {
+    state.error = error;
   },
   gotItems(state, items) {
     state.items = items;
   },
-  getItemsError(state, error) {
-    state.getItemsError = error;
-  }
 }
 
 export default userMutations;

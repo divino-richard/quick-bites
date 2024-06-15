@@ -1,24 +1,27 @@
-type ItemsType = {
-  data: any[],
-  totalCount: number
-}
-
 export interface UserState {
   createPending: boolean;
   createSuccess: boolean;
-  createError: string;
-  items: ItemsType | null,
-  getItemsLoading: boolean;
-  getItemsError: string;
+  updatePending: boolean;
+  updateSuccess: boolean;
+  deletePending: boolean;
+  deleteSuccess: boolean;
+  error: string;
+  items: any[],
+  totalItems: number;
+  loading: boolean;
 }
 
 const userState = { 
   createPending: false,
   createSuccess: false,
-  createError: '',
-  items: null,
-  getItemsLoading: false,
-  getItemsError: ''
+  updatePending: false,
+  updateSuccess: false,
+  deletePending: false,
+  deleteSuccess: false,
+  error: '',
+  items: [],
+  totalItems: 0,
+  loading: false
 } as UserState;
 
 export default userState;

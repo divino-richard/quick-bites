@@ -26,7 +26,7 @@ watch(networkError, (error) => {
   <div class="min-h-screen flex">
     <SideBar />
     <div class="flex-1">
-      <RouterView class="flex-1" />
+      <RouterView />
     </div>
   </div>
 </template>

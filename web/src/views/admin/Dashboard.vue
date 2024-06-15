@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div className="flex flex-1 h-screen bg-zinc-900">
+  <div className="flex flex-1 h-screen">
     <h1>Admin Dashboard</h1>
   </div>
 </template>

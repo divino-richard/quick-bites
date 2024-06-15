@@ -1,62 +1,76 @@
 <script setup lang="ts">
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
+DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-FormMessage,
 } from '@/components/ui/form'
 import { Button } from '../ui/button';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 import { Input } from '../ui/input';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { store } from '@/store';
+import { useToast } from '../ui/toast';
 
-const registerError = ref('');
-const registerLoading = ref(false);
+const { toast } = useToast();
 
-interface Props {
-  onUpdateOpen: (value: boolean) => void;
-  show: boolean;
-}
+const emits = defineEmits(['createSuccess']);
 
-defineProps<Props>();
+const openModal = ref(false);
+
+const createPending = computed(() => store.state.user.createPending);
+const createSuccess = computed(() => store.state.user.createSuccess);
 
 const formSchema = toTypedSchema(z.object({
   firstName: z.string().min(2).max(50),
   lastName: z.string().min(2).max(50),
   phoneNumber: z.string().min(10),
-  email: z.string().min(2).max(50),
-  userType: z.string()
-}))
+  userType: z.string(),
+  email: z.string().email(),
+}));
 
 const form = useForm({
   validationSchema: formSchema,
-})
+});
 
 const onSubmit = form.handleSubmit((data) => {
-  console.log('User Data', data);
-})
+  store.dispatch("user/create", data);
+});
 
+watch(createSuccess, (success) => {
+  if(!success) return;
+  openModal.value = false;
+  toast({
+    title:  'User created successfully',
+    variant: 'default'
+  });
+  store.commit('user/createSuccess', false);
+  emits('createSuccess');
+});
 </script>
 
 <template>
-  <Dialog :open="show" :onUpdate:open="onUpdateOpen" :modal="true">
+  <Dialog v-model:open="openModal">
+    <DialogTrigger>
+      <Button>
+        New User
+      </Button>
+    </DialogTrigger>
     <DialogContent class="max-w-[700px]">
       <DialogHeader>
-        <DialogTitle>Merchant's Account Information</DialogTitle>
+        <DialogTitle>Create New User</DialogTitle>
       </DialogHeader>
-
-      <div v-if="registerError">
-        <p class="text-red-600 text-sm font-semibold text-center">{{ registerError }}</p>
-      </div>
 
       <form @submit="onSubmit" class="flex flex-col gap-y-5">
         <div class="flex gap-x-5 w-full">
@@ -65,7 +79,7 @@ const onSubmit = form.handleSubmit((data) => {
               <FormLabel>First name</FormLabel>
               <FormControl>
                 <Input type="text" placeholder="First name" v-bind="componentField"/>
-              </FormControl>
+               </FormControl>
             </FormItem>
           </FormField>
 
@@ -85,8 +99,28 @@ const onSubmit = form.handleSubmit((data) => {
             <FormControl>
               <Input type="text" placeholder="Phone number" v-bind="componentField" />
             </FormControl>
-            <FormMessage />
-        </FormItem>
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="userType">
+          <FormItem>
+            <FormLabel>User type</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select user type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="merchant">Merchant</SelectItem>
+                    <SelectItem value="rider">Rider</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+          </FormItem>
         </FormField>
 
         <FormField v-slot="{ componentField }" name="email">
@@ -98,9 +132,14 @@ const onSubmit = form.handleSubmit((data) => {
           </FormItem>
         </FormField>
 
-        <div class="flex justify-end">
+        <div class="flex justify-end gap-2">
+          <DialogClose>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
           <Button type="submit" class="w-fit font-semibold text-sm">
-            {{ registerLoading ? 'Loading...' : 'Submit' }}
+            {{ createPending ? 'Loading...' : 'Submit' }}
           </Button>
         </div>
       </form>
