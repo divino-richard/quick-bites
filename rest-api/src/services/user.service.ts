@@ -30,13 +30,21 @@ export async function updateUser(params: IUpdateUser) {
 }
 
 interface IGetUsers {
+  userType?: string,
   skip: number,
   limit: number
 }
 export async function getUsers(params: IGetUsers) {
-  const { skip, limit } = params;
-  const data = await UserModel.find().skip(skip).limit(limit).select('-password');
-  const totalCount = await UserModel.countDocuments();
+  const { userType, skip, limit } = params;
+  let filter = {};
+  if(userType) {
+    filter = { userType }
+  }
+  const data = await UserModel.find({...filter})
+    .skip(skip)
+    .limit(limit)
+    .select('-password');
+  const totalCount = await UserModel.countDocuments({...filter});
   return { data, totalCount }
 }
 

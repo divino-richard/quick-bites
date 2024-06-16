@@ -3,7 +3,7 @@ import mongoose, { Types } from "mongoose";
 const { Schema } = mongoose;
 
 const UserType = {
-  values: ['admin', 'customer', 'rider', 'merchant'],
+  values: ['Admin', 'Customer', 'Rider', 'Merchant'],
   message: "Invalid user type"
 };
 const ValidIdStatus = {

@@ -16,7 +16,7 @@ import Colors from "@/constants/Colors";
 export default function Register () {
     const router = useRouter();
     const [registrationStep, setRegistrationStep] = useState<number>(1);
-    const [userType, setUserType] = useState<UserType>('customer');
+    const [userType, setUserType] = useState<UserType>('Customer');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");

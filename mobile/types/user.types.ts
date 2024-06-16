@@ -1,5 +1,5 @@
 
-export type UserType = 'customer' | 'rider' | 'merchant';
+export type UserType = 'Customer' | 'Rider' | 'Merchant';
 
 export interface Credentials {
     email: string

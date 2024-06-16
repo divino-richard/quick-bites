@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { store } from '@/store';
 import { useToast } from '../ui/toast';
 import { Edit } from 'lucide-vue-next';
+import { USER_TYPES } from '@/constants/user.constants';
 
 const { toast } = useToast();
 
@@ -133,10 +134,12 @@ watch(updateSuccess, (success) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="merchant">Merchant</SelectItem>
-                    <SelectItem value="rider">Rider</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem 
+                      v-for="userType in USER_TYPES" 
+                      :value="userType"
+                    >
+                      {{ userType }}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

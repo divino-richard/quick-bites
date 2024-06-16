@@ -38,7 +38,7 @@ const router = createRouter({
             name: 'admin-layout',
             component: AdminLayout,
             meta: {
-                authorize: ['admin']
+                authorize: ['Admin']
             },
             children: [
                 {
@@ -58,7 +58,7 @@ const router = createRouter({
             name: "merchant-layout",
             component: MerchantLayout,
             meta: {
-                authorize: ['merchant']
+                authorize: ['Merchant']
             },
             children: [
                 {

@@ -37,10 +37,10 @@ app.use('/menus', publicMenuRouter);
 
 // private routes
 app.use('/api', mainRouter);
-mainRouter.use('/restaurants', authorize(['merchant']), restaurantRouter);
+mainRouter.use('/restaurants', authorize(['Merchant']), restaurantRouter);
 mainRouter.use('/menus', menuRouter);
 mainRouter.use('/uploads', uploadRouter);
-mainRouter.use('/users', authorize(['admin']), userRouter);
+mainRouter.use('/users', authorize(['Admin']), userRouter);
  
 dbConnect();
 

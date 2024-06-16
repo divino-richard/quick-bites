@@ -4,7 +4,7 @@ export interface Credentials {
     password: string;
 }
 
-export type UserType = 'admin' | 'rider' | 'merchant' | 'customer';
+export type UserType = 'Admin' | 'Rider' | 'Merchant' | 'Customer';
 
 export type RegistrationStatus = 'initial' | 'completed'
 

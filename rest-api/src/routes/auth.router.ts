@@ -18,7 +18,7 @@ authRouter.post('/register', validateSchema(registerSchema), async (req: Request
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     await createUser({
       ...req.body, 
-      userType: 'customer',
+      userType: 'Customer',
       password: hashedPassword,
     });
     res.status(200).json({

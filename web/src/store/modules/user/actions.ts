@@ -38,8 +38,12 @@ const userActions: ActionTree<UserState, RootState> = {
   async getItems({state, commit}, payload) {
     try {
       state.loading = true;
-      const { skip, limit } = payload;
-      const response = await api.get(`/api/users?skip=${skip}&limit=${limit}`);
+      const { userType, skip, limit } = payload;
+      let filter = '';
+      if(userType && userType !== 'All') {
+        filter = `userType=${userType}&`;
+      }
+      const response = await api.get(`/api/users?${filter}skip=${skip}&limit=${limit}`);
       const { data, totalCount } = response.data;
       commit('gotItems', data);
       state.totalItems = totalCount;

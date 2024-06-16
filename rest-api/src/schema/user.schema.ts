@@ -24,12 +24,13 @@ export const updateUserSchema = z.object({
 
 export const getUsersSchema = z.object({
   query: z.object({
+    userType: z.string().min(1).optional(),
     skip: z.string().min(1).refine(skip => !isNaN(Number(skip)), {
       message: 'must be a number'
     }),
     limit: z.string().min(1).refine(limit => !isNaN(Number(limit)), {
       message: 'must be a number'
-    })
+    }),
   })
 })
 

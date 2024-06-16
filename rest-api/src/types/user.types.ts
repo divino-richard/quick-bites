@@ -1,4 +1,4 @@
-export type UserType = 'admin' | 'merchant' | 'rider' | 'customer';
+export type UserType = 'Admin' | 'Merchant' | 'Rider' | 'Customer';
 export type RegistrationType = 'initial' | 'completed' | 'approved' | 'denied';
 export interface User {
     _id?: string,

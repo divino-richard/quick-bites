@@ -22,6 +22,7 @@ import { computed, ref, watch } from 'vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { store } from '@/store';
 import { useToast } from '../ui/toast';
+import { USER_TYPES } from '@/constants/user.constants';
 
 const { toast } = useToast();
 
@@ -112,10 +113,12 @@ watch(createSuccess, (success) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="merchant">Merchant</SelectItem>
-                    <SelectItem value="rider">Rider</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem 
+                      v-for="userType in USER_TYPES" 
+                      :value="userType"
+                    >
+                      {{ userType }}
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

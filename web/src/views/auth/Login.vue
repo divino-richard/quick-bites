@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ref, computed, watch } from "vue";
-import { Credentials } from "../../types/user.types";
+import { Credentials, UserType } from "../../types/user.types";
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import { useToast } from "@/components/ui/toast";
@@ -30,7 +30,7 @@ watch(loginSuccess, (success) => {
       variant: 'default'
     });
     const session = getSession();
-    redirectUser(session?.userData.userType ?? '');
+    redirectUser(session?.userData.userType as UserType);
     store.commit('auth/loginSuccess', false);
   }
 });
@@ -64,18 +64,18 @@ const togglePassword = (checked: boolean) => {
   showPassword.value = checked;
 };
 
-const redirectUser = (userType: string) => {
+const redirectUser = (userType: UserType) => {
   switch (userType) {
-    case "admin":
+    case "Admin":
       router.push("/admin");
       break;
-    case "merchant":
+    case "Merchant":
       router.push("/merchant");
       break;
-    case "rider":
+    case "Rider":
       router.push("/rider");
       break;
-    case "customer":
+    case "Customer":
       router.push("/");
       break;
   }

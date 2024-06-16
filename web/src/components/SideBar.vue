@@ -6,10 +6,10 @@ import { UserSession } from "@/types/user.types";
 import { Separator } from "@/components/ui/separator";
 import { RouterLink, useRoute } from "vue-router";
 import { LogOut } from "lucide-vue-next";
-import { ADMIN_ROUTES, MERCHANT_ROUTES } from "@/constants";
 import router from "@/router";
 import { useStore } from "@/store";
 import { SidebarRoute } from "@/types/routes.types";
+import { ADMIN_ROUTES, MERCHANT_ROUTES } from "@/constants/sidebar.constants";
 
 const store = useStore();
 const route = useRoute();
@@ -31,10 +31,10 @@ onMounted(() => {
   }
   const { userData } = session.value;
   switch(userData.userType) {
-    case 'admin':
+    case 'Admin':
       sideBarMenus.value = ADMIN_ROUTES;
       break;
-    case 'merchant':
+    case 'Merchant':
       sideBarMenus.value = MERCHANT_ROUTES;
       break;
   } 
@@ -83,3 +83,4 @@ onMounted(() => {
     </Button>
   </div>
 </template>
+@/constants/sidebar.constants

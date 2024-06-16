@@ -39,8 +39,9 @@ userRouter.put('/', validateSchema(updateUserSchema), async(req: Request, res: R
 
 userRouter.get('/', validateSchema(getUsersSchema), async(req: Request, res: Response) => {
   try {
-    const { skip, limit } = req.query;
+    const { userType, skip, limit } = req.query;
     const users = await getUsers({ 
+      userType: userType ? String(userType) : undefined,
       skip: Number(skip), 
       limit: Number(limit)
     });

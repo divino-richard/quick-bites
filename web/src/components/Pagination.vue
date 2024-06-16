@@ -18,7 +18,7 @@ const { total } = defineProps({
   total: {
     type: Number,
     required: true
-  }
+  },
 })
 
 const emits = defineEmits(['pageUpdate']);
@@ -27,7 +27,7 @@ const emits = defineEmits(['pageUpdate']);
 
 <template>
   <Pagination 
-    v-slot="{ page }" 
+    v-slot="{ page }"
     @update:page="(page) => emits('pageUpdate', page)" 
     :total="total" 
     :sibling-count="1" 
