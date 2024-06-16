@@ -1,5 +1,5 @@
 import { SidebarRoute } from "@/types/routes.types";
-import { Gauge, Briefcase, Settings, Split, Users2 } from 'lucide-vue-next';
+import { Gauge, Utensils, Settings, Users2 } from 'lucide-vue-next';
 
 export const MERCHANT_ROUTES: SidebarRoute[] = [
     {
@@ -9,10 +9,14 @@ export const MERCHANT_ROUTES: SidebarRoute[] = [
         name: ['merchant-dashboard']
     },
     {
-        label: 'Business',
-        icon: Briefcase,
-        link: '/merchant/business',
-        name: ['merchant-business', 'merchant-business-info']
+        label: 'Restaurants',
+        icon: Utensils,
+        link: '/merchant/restaurants',
+        name: [
+            'merchant-restaurants', 
+            'merchant-create-restaurant', 
+            'merchant-restaurant'
+        ]
     },
     {
         label: 'Settings',
@@ -20,12 +24,6 @@ export const MERCHANT_ROUTES: SidebarRoute[] = [
         link: '/merchant/settings',
         name: ['merchant-settings']
     },
-    {
-        label: 'Branches',
-        link: '/merchant/branches',
-        icon: Split,
-        name: ['merchant-business-branches'],
-    }
 ]
 
 export const ADMIN_ROUTES: SidebarRoute[] = [

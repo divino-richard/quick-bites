@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { Ref, computed, ref, watch } from "vue";
 import { Button } from "../../components/ui/button";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import { Input } from "../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -12,18 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { List, Utensils, Image, Edit } from "lucide-vue-next";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
-import { useForm } from "vee-validate";
-import { FormField, FormItem, FormLabel, FormMessage } from "../../components/ui/form";
-import { useToast } from "../../components/ui/toast";
+import { List, Edit } from "lucide-vue-next";
+
 import moment from "moment";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { PopoverClose } from "radix-vue";
-import UpdateMenuImageModal from "../../components/merchant/UpdateMenuImageModal.vue";
-import UpdateFoodMenuModal from "../../components/merchant/UpdateFoodMenuModal.vue";
-import { FoodMenu } from "../../types/foodMenu.type";
 import {
   Select,
   SelectContent,
@@ -33,153 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import Spinner from "../../components/ui/Spinner.vue";
 import { useStore } from "../../store";
+import { computed, onMounted } from "vue";
+import { formatPrice } from "@/utils/format.utils";
 
 const store = useStore();
 
-const addFoodMenuLoading = computed(() => store.state.merchantFoodMenu.addLoading);
-const addFoodMenuError = computed(() => store.state.merchantFoodMenu.addError);
-const addFoodMenuSuccess = computed(() => store.state.merchantFoodMenu.addItemSuccess);
-const foodMenus = computed(() => store.getters["merchantFoodMenu/getFoodMenus"]);
-const deleteFoodMenuLoading = computed(
-  () => store.state.merchantFoodMenu.deleteItemLoading
-);
-const deleteFoodMenuSuccess = computed(
-  () => store.state.merchantFoodMenu.deleteItemSuccess
-);
-const deleteFoodMenuError = computed(() => store.state.merchantFoodMenu.deleteItemError);
-const updateStatusLoading = computed(
-  () => store.state.merchantFoodMenu.updateStatusLoading
-);
-const updateStatusError = computed(() => store.state.merchantFoodMenu.updateStatusError);
-const updateStatusSuccess = computed(
-  () => store.state.merchantFoodMenu.updateStatusSuccess
-);
+const restaurant = computed(() => store.state.restaurant.item);
+const menus = computed(() => store.state.menu.items);
 
-const foodMenuImages: Ref<HTMLInputElement | null> = ref(null);
-const selectedImageUrl = ref("");
-const openAddFoodMenuModal = ref(false);
-const openUpdateImageModal = ref(false);
-const selectedFoodMenuId = ref("");
-const foodMenuToEdit = ref<FoodMenu | null>(null);
-const openUpdateFoodMenuModal = ref(false);
-const foodMenuToEditStatus = ref("");
-
-const { toast } = useToast();
-
-const handleUploadClick = () => {
-  if (!foodMenuImages?.value) return;
-  foodMenuImages?.value?.click();
-};
-
-const handleFileChange = (event: any) => {
-  const file = event.target.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      selectedImageUrl.value = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-watch(addFoodMenuSuccess, (success) => {
-  if (success) {
-    openAddFoodMenuModal.value = false;
-    selectedImageUrl.value = "";
-    toast({
-      title: "Food menu added successfully",
-      variant: "default",
-      class: "text-[green]",
-    });
-    store.commit("merchantFoodMenu/resetAddSuccess");
+onMounted(() => {
+  if(restaurant?.value) {
+    store.dispatch('menu/getItems', restaurant?.value._id);
   }
 });
-
-watch(deleteFoodMenuError, (error) => {
-  if (error) {
-    toast({
-      title: error,
-      variant: "destructive",
-    });
-    store.commit("merchantFoodMenu/resetDeleteItemError");
-  }
-});
-
-watch(deleteFoodMenuSuccess, (deleteSuccess) => {
-  if (deleteSuccess) {
-    toast({
-      title: "Food menu deleted successfully",
-      variant: "default",
-      class: "text-[green]",
-    });
-    store.commit("merchantFoodMenu/resetDeleteItemSuccess");
-  }
-});
-
-watch(updateStatusError, (error) => {
-  if (error) {
-    toast({
-      title: error,
-      variant: "destructive",
-    });
-    store.commit("merchantFoodMenu/resetUpdateStatusError");
-  }
-});
-
-watch(updateStatusSuccess, (updateSuccess) => {
-  if (updateSuccess) {
-    toast({
-      title: "Status updated successfully",
-      variant: "default",
-      class: "text-[green]",
-    });
-    store.commit("merchantFoodMenu/toggleUpdateStatusSuccess");
-  }
-});
-
-const formSchema = toTypedSchema(
-  z.object({
-    name: z.string().min(2).max(50),
-    description: z.string().min(2).max(50),
-    price: z.number(),
-    category: z.string().min(2).max(50),
-    foodMenuImage: z.any(),
-  })
-);
-
-const form = useForm({
-  validationSchema: formSchema,
-});
-
-const onSubmit = form.handleSubmit((data) => {
-  store.dispatch("merchantFoodMenu/addFoodMenu", data);
-});
-
-const handleDeleteMenu = (foodMenuId: string) => {
-  store.dispatch("merchantFoodMenu/deleteItem", foodMenuId);
-};
-
-const handleEditFoodMenu = (foodMenu: FoodMenu) => {
-  foodMenuToEdit.value = foodMenu;
-  openUpdateFoodMenuModal.value = true;
-};
-
-const handleFoodMenuImageUpdate = (id: string) => {
-  openUpdateImageModal.value = true;
-  selectedFoodMenuId.value = id;
-};
-
-const handleStatusChange = (foodMenuId: string, status: string) => {
-  foodMenuToEditStatus.value = foodMenuId;
-  const data = {
-    id: foodMenuId,
-    status,
-  };
-  store.dispatch("merchantFoodMenu/updateStatus", data);
-};
 </script>
 
 <template>
@@ -189,7 +44,7 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
         <List :size="18" />
         <h1 class="text-[14px] font-medium">Menu List</h1>
       </div>
-      <Button
+      <!-- <Button
         class="text-[12px] py-[2px] bg-zinc-900"
         @click="() => (openAddFoodMenuModal = true)"
       >
@@ -285,45 +140,34 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog>
+      </Dialog> -->
     </div>
     <Table class="border border-zinc-100">
       <TableHeader>
         <TableRow class="bg-zinc-100">
-          <TableHead class="w-[100px]"> # </TableHead>
-          <TableHead class="w-[100px]"> Name </TableHead>
+          <TableHead class="w-[50px]"> # </TableHead>
+          <TableHead class="w-[50px]"> Image </TableHead>
+          <TableHead> Name </TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Price</TableHead>
-          <TableHead> Category </TableHead>
-          <TableHead> Posted </TableHead>
-          <TableHead> Image </TableHead>
-          <TableHead class="text-center"> Status </TableHead>
-          <TableHead class="text-center"> Actions </TableHead>
+          <TableHead>Meal</TableHead>
+          <TableHead>Posted </TableHead>
+          <TableHead class="w-[150px]"> Status </TableHead>
+          <TableHead class="w-[200px] text-center"> Actions </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow
-          v-for="(foodMenu, index) in foodMenus"
-          :key="foodMenu._id"
+          v-for="(menu, index) in menus"
+          :key="menu._id"
           class="whitespace-nowrap"
         >
           <TableCell>{{ index + 1 }}</TableCell>
-          <TableCell class="font-medium">
-            {{ foodMenu.name }}
-          </TableCell>
-          <TableCell class="max-w-[200px] truncate">
-            {{ foodMenu.description }}
-          </TableCell>
-          <TableCell>{{ foodMenu.price }}</TableCell>
-          <TableCell>
-            {{ foodMenu.category }}
-          </TableCell>
-          <TableCell> {{ moment(foodMenu.createdAt).fromNow() }} </TableCell>
           <TableCell>
             <div class="food-menu-image-container w-[50px] h-[45px] relative">
               <img
                 class="h-full w-full rounded-md object-cover border border-zinc-200 p-1"
-                :src="foodMenu.image"
+                :src="menu.images[0].imageUrl"
               />
               <div
                 class="food-menu-image-mask hidden w-[50px] h-[45px] justify-center items-center absolute top-0 left-0 bg-zinc-900 bg-opacity-[0.7] rounded-md"
@@ -331,32 +175,41 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
                 <Edit
                   :size="18"
                   class="text-orange-600 cursor-pointer"
-                  @click="handleFoodMenuImageUpdate(foodMenu._id)"
                 />
               </div>
             </div>
           </TableCell>
+          <TableCell class="font-medium">
+            {{ menu.name }}
+          </TableCell>
+          <TableCell class="max-w-[200px] truncate">
+            {{ menu.description }}
+          </TableCell>
+          <TableCell>
+            {{ menu.price.currency + formatPrice(menu.price.value)}}
+          </TableCell>
+          <TableCell>
+            {{ menu.mealType }}
+          </TableCell>
+          <TableCell> {{ moment(menu.createdAt).fromNow() }} </TableCell>
           <TableCell>
             <Select
-              v-model="foodMenu.status"
-              @update:model-value="
-                (status) => handleStatusChange(foodMenu._id, status)
-              "
+              v-model="menu.status"
             >
               <SelectTrigger
                 :class="{
-                  'bg-green-200': foodMenu.status === 'available',
-                  'bg-zinc-200': foodMenu.status === 'unavailable',
+                  'bg-green-200': menu.status === 'available',
+                  'bg-zinc-200': menu.status === 'unavailable',
                 }"
                 class="border-none"
               >
-                <Spinner
+                <!-- <Spinner
                   v-if="
-                    updateStatusLoading && foodMenu._id === foodMenuToEditStatus
+                    updateStatusLoading && menu._id === menuToEditStatus
                   "
                   :size="16"
-                />
-                <SelectValue :placeholder="foodMenu.status" />
+                /> -->
+                <SelectValue :placeholder="menu.status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -368,10 +221,10 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
             </Select>
           </TableCell>
           <TableCell class="flex justify-center">
-            <Button variant="ghost" @click="handleEditFoodMenu(foodMenu)">
+            <Button variant="ghost">
               Edit
             </Button>
-            <Popover>
+            <!-- <Popover>
               <PopoverTrigger as-child>
                 <Button variant="ghost" class="text-red-500"> Delete </Button>
               </PopoverTrigger>
@@ -393,13 +246,13 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
                   </Button>
                 </div>
               </PopoverContent>
-            </Popover>
+            </Popover> -->
           </TableCell>
         </TableRow>
       </TableBody>
     </Table>
 
-    <UpdateMenuImageModal
+    <!-- <UpdateMenuImageModal
       :id="selectedFoodMenuId"
       :open="openUpdateImageModal"
       :onClose="() => (openUpdateImageModal = false)"
@@ -409,6 +262,6 @@ const handleStatusChange = (foodMenuId: string, status: string) => {
       :open="openUpdateFoodMenuModal"
       :onClose="() => (openUpdateFoodMenuModal = false)"
       :currentData="foodMenuToEdit"
-    />
+    /> -->
   </div>
 </template>

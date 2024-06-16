@@ -1,7 +1,7 @@
 import { MutationTree } from "vuex";
-import { BusinessState } from "./state";
+import { RestaurantState } from "./state";
 
-const businessMutations: MutationTree<BusinessState> = {
+const restaurantMutations: MutationTree<RestaurantState> = {
   createSuccess(state, success: boolean) {
     state.createSuccess = success;
   },
@@ -11,15 +11,15 @@ const businessMutations: MutationTree<BusinessState> = {
   gotItems(state, items) {
     state.items = items;
   },
-  getItemsError(state, error) {
+  getItemsError(state, error: string) {
     state.getItemsError = error;
   },
-  gotItem(state, payload) {
-    state.item = payload;
+  gotItem(state, item) {
+    state.item = item
   },
-  getItemError(state, error) {
+  getItemError(state, error: string) {
     state.getItemError = error;
   }
 }
 
-export default businessMutations;
+export default restaurantMutations;

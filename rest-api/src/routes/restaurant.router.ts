@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-import { Types } from 'mongoose';
 import { validateSchema } from '../schema';
 import { createRestaurantSchema, getRestaurantSchema } from '../schema/restaurant.schema';
 import { createRestaurant, getRestaurantById, getRestaurants } from '../services/restuarant.service';

@@ -4,7 +4,7 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { onMounted, ref } from "vue";
 import { Input } from '../ui/input';
 
-const emits = defineEmits(['changeCenter', 'changeAddress']);
+const emits = defineEmits(['changeCenter', 'changePlace']);
 
 const center = ref({ lat: 14.599512, lng: 120.984222 });
 
@@ -42,7 +42,7 @@ onMounted(async () => {
     }
     center.value = latLng;
     emits('changeCenter', latLng)
-    emits('changeAddress', place.formatted_address);
+    emits('changePlace', place);
   });
 });
 </script>

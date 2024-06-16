@@ -10,11 +10,10 @@ export const createRestaurantSchema = z.object({
     taxIdNumber: z.number(),
     address: z.object({
       formatted: z.string(),
-      street: z.string(),
+      street: z.string().optional(),
       city: z.string(),
-      state: z.string().optional(),
-      zipCode: z.string(),
-      country:z.string(),
+      postalCode: z.string(),
+      country: z.string(),
       location: z.object({
         lat: z.number(),
         lng: z.number()

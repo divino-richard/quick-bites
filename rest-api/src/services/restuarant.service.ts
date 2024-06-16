@@ -9,10 +9,9 @@ interface ICreateRestaurant {
   taxIdNumber: number;
   address: {
     formatted: string;
-    street: string;
+    street?: string;
     city: string;
-    state: string;
-    zipCode: string;
+    postalCode: string;
     country:string;
     location: {
       lat: number;

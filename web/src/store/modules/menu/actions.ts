@@ -5,10 +5,10 @@ import { AxiosError } from "axios";
 import api from "@/utils/api";
 
 const menuActions: ActionTree<MenuState, RootState> = { 
-  async getItems({state, commit}, businessId) {
+  async getItems({state, commit}, restaurantId) {
     try {
       state.loadingItems = true;
-      const response = await api.get(`/api/menus?bid=${businessId}`);
+      const response = await api.get(`/api/menus?rid=${restaurantId}`);
       commit('gotItems', response.data);
     } catch (error) {
       let message = '';

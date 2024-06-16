@@ -45,17 +45,13 @@ const restaurantSchema = new Schema({
     },
     street: {
       type: String,
-      required: true
+      required: false
     },
     city: {
       type: String,
       required: true
     },
-    state: {
-      type: String,
-      required: false
-    },
-    zipCode: {
+    postalCode: {
       type: String,
       required: true
     },

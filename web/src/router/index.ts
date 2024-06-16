@@ -6,11 +6,10 @@ import MerchantDashboard from '@/views/merchant/Dashboard.vue';
 import MerchantLayout from '@/views/merchant/Layout.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import User from "@/views/admin/User.vue";
-import CreateBusiness from "@/views/merchant/CreateBusiness.vue";
+import CreateRestaurant from "@/views/merchant/CreateRestaurant.vue";
 import CustomerLayout from "@/views/customer/Layout.vue";
-import MerchantBusinesses from '@/views/merchant/Businesses.vue';
-import MerchantBusiness from '@/views/merchant/Business.vue';
-import MerchantBusinessBraches from '@/views/merchant/Branches.vue';
+import MerchantRestaurants from '@/views/merchant/Restaurants.vue';
+import MerchantRestaurant from '@/views/merchant/Restaurant.vue';
 import MerchantSettings from '@/views/merchant/Settings.vue';
 import CustomerProfile from '@/views/customer/Profile.vue';
 import AdminLayout from "@/views/admin/Layout.vue";
@@ -67,29 +66,24 @@ const router = createRouter({
                     component: MerchantDashboard,
                 },
                 {
-                    path: 'business',
-                    name: 'merchant-business',
-                    component: MerchantBusinesses,
+                    path: 'restaurants',
+                    name: 'merchant-restaurants',
+                    component: MerchantRestaurants
                 },
                 {
-                    path: 'business/:id',
-                    name: 'merchant-business-info',
-                    component: MerchantBusiness
+                    path: 'restaurants/create',
+                    name: 'merchant-create-restaurant',
+                    component: CreateRestaurant
+                },
+                {
+                    path: 'restaurants/:id',
+                    name: 'merchant-restaurant',
+                    component: MerchantRestaurant
                 },
                 {
                     path: "settings",
                     name: "merchant-settings",
                     component: MerchantSettings
-                },
-                {
-                    path: 'branches',
-                    name: 'merchant-business-branches',
-                    component: MerchantBusinessBraches,
-                },
-                {
-                    path: 'create-business',
-                    name: 'merchant-create-business',
-                    component: CreateBusiness
                 }
             ],
         },

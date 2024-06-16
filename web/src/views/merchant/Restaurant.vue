@@ -2,7 +2,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useStore } from "@/store";
-import { ArrowLeftIcon, MapPin } from "lucide-vue-next";
+import { ArrowLeftIcon, Utensils } from "lucide-vue-next";
 import { computed, onMounted, ref } from "vue";
 import {
   Tabs,
@@ -14,48 +14,51 @@ import BusinessInfoSkeleton from "@/components/skeletons/BusinessInfoSkeleton.vu
 import { useRoute, useRouter } from "vue-router";
 import { Button } from "@/components/ui/button";
 import MenuList from "@/components/merchant/MenuList.vue";
+import { Badge } from "@/components/ui/badge";
 
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
-const businessId = route.params.id;
+const restaurantId = route.params.id;
 
 const activeTab = ref('menus');
 
 onMounted(() => {
-  store.dispatch("business/getItem", businessId);
-  // store.dispatch("merchantFoodMenu/getFoodMenus");
+  store.dispatch("restaurant/getItem", restaurantId);
 });
 
-const business = computed(() => store.state.business.item);
-const loadingBusiness = computed(() => store.state.business.loadingItem);
+const restaurant = computed(() => store.state.restaurant.item);
+const loadingRestaurnt = computed(() => store.state.restaurant.getItemLoading);
 
 </script>
 
 <template>
   <div class="bg-zinc-100 p-5">
+    <Button
+      variant="ghost"
+      class="flex gap-x-2 items-center mb-2"
+      @click="() => router.back()"
+    >
+      <ArrowLeftIcon :size="18" />
+      <p class="font-semibold text-[16px]">Back</p>
+    </Button>
     <div class="flex-1 p-5 overflow-x-auto bg-white">
-      <BusinessInfoSkeleton v-if="loadingBusiness" />
+      <BusinessInfoSkeleton v-if="loadingRestaurnt" />
       <div v-else>
-        <Button 
-          variant="link" 
-          class="flex gap-2"
-          :onclick="() => router.back()"
-        >
-          <ArrowLeftIcon :size="18" />
-          <span>Back</span>
-        </Button>
         <div class="flex gap-2 py-5">
           <Avatar size="base">
             <AvataFallback class="text-[35px]">
-              {{ business?.name[0].toUpperCase() }}
+              {{ restaurant?.name[0].toUpperCase() }}
             </AvataFallback>
           </Avatar>
           <div class="p-2">
-            <h1 class="font-semibold text-[18px] text-zinc-900">{{ business?.name }}</h1>
-            <div class="flex items-center gap-x-2 text-[12px] text-zinc-900 font-normal">
-              <MapPin :size="16" />
-              <p>{{ business?.businessAddress?.address }}</p>
+            <h1 class="font-semibold text-[18px] text-zinc-900">{{ restaurant?.name }}</h1>
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <Utensils :size="14"/>
+                <p class="text-[14px]">{{ restaurant?.type }}</p>
+              </div>
+              <Badge>{{restaurant?.specialFeature }}</Badge>
             </div>
           </div>
         </div>
