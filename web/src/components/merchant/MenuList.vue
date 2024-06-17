@@ -10,31 +10,32 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { List, Edit } from "lucide-vue-next";
-
 import moment from "moment";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
 import { useStore } from "../../store";
 import { computed, onMounted } from "vue";
 import { formatPrice } from "@/utils/format.utils";
+import CreateMenuModal from "./CreateMenuModal.vue";
+import { Badge } from "../ui/badge";
+import DeleteMenuAlert from "./DeleteMenuAlert.vue";
 
 const store = useStore();
 
-const restaurant = computed(() => store.state.restaurant.item);
+const { restaurantId } = defineProps({
+  restaurantId: {
+    type: String,
+    required: true
+  }
+});
+
 const menus = computed(() => store.state.menu.items);
 
 onMounted(() => {
-  if(restaurant?.value) {
-    store.dispatch('menu/getItems', restaurant?.value._id);
-  }
+  getMenus();
 });
+
+const getMenus = () => {
+  store.dispatch('menu/getItems', restaurantId);
+}
 </script>
 
 <template>
@@ -44,103 +45,10 @@ onMounted(() => {
         <List :size="18" />
         <h1 class="text-[14px] font-medium">Menu List</h1>
       </div>
-      <!-- <Button
-        class="text-[12px] py-[2px] bg-zinc-900"
-        @click="() => (openAddFoodMenuModal = true)"
-      >
-        Add Menu
-      </Button>
-      <Dialog
-        :open="openAddFoodMenuModal"
-        @update:open="(value: boolean) => openAddFoodMenuModal = value"
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle class="flex gap-x-2">
-              <Utensils :size="18" class="text-orange-600" />
-              <h1>Add Food Menu</h1>
-            </DialogTitle>
-          </DialogHeader>
-          <p v-if="addFoodMenuError" class="text-[red] text-center">
-            {{ addFoodMenuError }}
-          </p>
-          <form @submit="onSubmit" class="space-y-2" enctype="multipart/form-data">
-            <FormField v-slot="{ componentField }" name="name">
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input type="text" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="description">
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input type="text" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="price">
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <Input type="number" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="category">
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input type="text" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="foodMenuImage">
-              <FormItem>
-                <FormLabel>Upload Image</FormLabel>
-                <FormControl>
-                  <div
-                    class="h-[100px] w-[100px] flex items-center justify-center rounded-md border border-zinc-100 cursor-pointer"
-                    @click="handleUploadClick"
-                  >
-                    <img
-                      v-if="selectedImageUrl"
-                      :src="selectedImageUrl"
-                      class="w-full h-full object-cover"
-                    />
-                    <Image v-else :size="25" class="text-zinc-200" />
-                  </div>
-                  <input
-                    ref="foodMenuImages"
-                    type="file"
-                    accept="image/png, image/jpg, image/jpeg, image/gif"
-                    hidden
-                    v-bind="componentField"
-                    @change="handleFileChange"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <DialogFooter class="w-full flex justify-end">
-              <Button type="submit" :disabled="addFoodMenuLoading">
-                {{ addFoodMenuLoading ? "Loading..." : "Submit" }}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog> -->
+      <CreateMenuModal 
+        :restaurantId="restaurantId"
+        @createSuccess="getMenus"
+      />
     </div>
     <Table class="border border-zinc-100">
       <TableHeader>
@@ -193,60 +101,17 @@ onMounted(() => {
           </TableCell>
           <TableCell> {{ moment(menu.createdAt).fromNow() }} </TableCell>
           <TableCell>
-            <Select
-              v-model="menu.status"
-            >
-              <SelectTrigger
-                :class="{
-                  'bg-green-200': menu.status === 'available',
-                  'bg-zinc-200': menu.status === 'unavailable',
-                }"
-                class="border-none"
-              >
-                <!-- <Spinner
-                  v-if="
-                    updateStatusLoading && menu._id === menuToEditStatus
-                  "
-                  :size="16"
-                /> -->
-                <SelectValue :placeholder="menu.status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel class="pl-2">Select status</SelectLabel>
-                  <SelectItem value="available"> Available </SelectItem>
-                  <SelectItem value="unavailable"> Unavailable </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Badge :class="{'bg-green-600' : menu.status === 'available', 'bg-zinc-500' : menu.status === 'unavailable'}">{{ menu.status }}</Badge>
           </TableCell>
           <TableCell class="flex justify-center">
-            <Button variant="ghost">
+            <Button variant="ghost" class="flex items-center gap-2">
+              <Edit :size="16"/>
               Edit
             </Button>
-            <!-- <Popover>
-              <PopoverTrigger as-child>
-                <Button variant="ghost" class="text-red-500"> Delete </Button>
-              </PopoverTrigger>
-              <PopoverContent class="mx-2">
-                <h4>Are you sure to delete?</h4>
-                <p class="text-[12px]">This menu will be deleted permanently</p>
-                <div class="flex gap-x-2 mt-5 justify-end">
-                  <PopoverClose>
-                    <Button variant="ghost" class="h-[30px] text-[12px]">
-                      Cancel
-                    </Button>
-                  </PopoverClose>
-                  <Button
-                    variant="destructive"
-                    class="h-[30px] text-[12px]"
-                    @click="handleDeleteMenu(foodMenu._id)"
-                  >
-                    {{ deleteFoodMenuLoading ? "Loading..." : "Delete" }}
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover> -->
+            <DeleteMenuAlert 
+              :menuId="menu._id"
+              @deleteSuccess="getMenus"
+            />
           </TableCell>
         </TableRow>
       </TableBody>

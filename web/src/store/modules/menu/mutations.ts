@@ -5,8 +5,20 @@ const menuMutations: MutationTree<MenuState> = {
   gotItems(state, items) {
     state.items = items;
   },
-  getItemsError(state, error) {
+  getItemsError(state, error: string) {
     state.getItemsError = error;
+  },
+  createError(state, error: string) {
+    state.createError = error;
+  },
+  createSuccess(state, success: boolean) {
+    state.createSuccess = success;
+  },
+  deleteSuccess(state, success: boolean) {
+    state.deleteSuccess = success;
+  },
+  deleteError(state, error: string) {
+    state.deleteError = error;
   }
 }
 

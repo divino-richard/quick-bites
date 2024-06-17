@@ -36,6 +36,37 @@ const menuActions: ActionTree<MenuState, RootState> = {
     } finally {
       state.loadingItems = false;
     }
+  },
+  async create({state, commit}, payload) {
+    try {
+      state.createPending = true;
+      await api.post('/api/menus', payload);
+      commit('createSuccess', true);
+    } catch(error) {
+      console.log('Error', error)
+      let message = '';
+      if(error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      commit('createError', message || 'Something went wrong')
+    } finally {
+      state.createPending = false;
+    }
+  },
+  async delete({state, commit}, menuId) {
+    try {
+      state.deletePending = true;
+      await api.delete(`/api/menus/${menuId}`);
+      commit('deleteSuccess', true);
+    } catch(error) {
+      let message = '';
+      if(error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      commit('deleteError', message || "Something went wrong");
+    } finally {
+      state.deletePending = false;
+    }
   }
 }
 

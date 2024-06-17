@@ -81,7 +81,7 @@ const loadingRestaurnt = computed(() => store.state.restaurant.getItemLoading);
           </TabsList>
           <Separator class="w-full bg-zinc-100" />
           <TabsContent value="menus">
-            <MenuList />
+            <MenuList :restaurantId="String(restaurantId)"/>
           </TabsContent>
           <TabsContent value="details">
             <h1>Details</h1>
