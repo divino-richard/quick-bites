@@ -19,8 +19,12 @@ menuRouter.post('/', validateSchema(createMenuSchema), async(req: Request, res: 
 
 menuRouter.get('/', validateSchema(getRestaurantMenusSchema), async(req: Request, res: Response) => {
   try {
-    const { rid } = req.query;
-    const menus = await getRestaurantMenus({ restaurant: String(rid) });
+    const { rid, status, search } = req.query;
+    const menus = await getRestaurantMenus({ 
+      restaurant: String(rid),
+      status: status ? String(status) : undefined,
+      search: search ? String(search) : undefined,
+    });
     if(!menus) return res.status(400).json({
       message: 'Failed to get restaurant menus'
     });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { FormControl, FormField, FormItem, FormLabel } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -14,21 +14,39 @@ import { store } from '@/store';
 import { useToast } from '../ui/toast';
 import { Loader2 } from 'lucide-vue-next';
 
+interface Props {
+  restaurantId: string,
+  action: 'edit' | 'add',
+  defaultValues: any,
+  openModal: boolean
+}
+
 const { toast } = useToast();
 
-const emits = defineEmits(['createSuccess']);
+const emits = defineEmits(['success', 'modalUpdate']);
 
-const { restaurantId } = defineProps({
-  restaurantId: {
-    type: String,
-    required: true
-  }
-});
+const props = defineProps<Props>();
+const { restaurantId } = props;
+const defaultValues = computed(() => props.defaultValues);
+const action = computed(() => props.action);
 
 const images = ref<any[]>([]);
+
 const createPending = computed(() => store.state.menu.createPending);
 const createError = computed(() => store.state.menu.createError);
 const createSuccess = computed(() => store.state.menu.createSuccess);
+const updatePending = computed(() => store.state.menu.updatePending);
+const updateError = computed(() => store.state.menu.updateError);
+const updateSuccess = computed(() => store.state.menu.updateSuccess);
+
+watch(defaultValues, (data) => {
+  if(data) {
+    form.setValues(data);
+    form.setFieldValue('currency', data?.price?.currency);
+    form.setFieldValue('price', data?.price?.value);
+    images.value = data?.images
+  }
+});
 
 const formSchema = toTypedSchema(z.object({
   name: z.string(),
@@ -40,12 +58,28 @@ const formSchema = toTypedSchema(z.object({
 }));
 
 const form = useForm({
-  validationSchema: formSchema
+  validationSchema: formSchema,
 })
 
 const onSubmit = form.handleSubmit((data) => {
-  store.dispatch('menu/create', {
-    restaurant: restaurantId, 
+  if(action.value === 'add') {
+    if(!images) return toast({
+      title: 'Error',
+      description: 'Images is reqired'
+    })
+    store.dispatch('menu/create', {
+      restaurant: restaurantId, 
+      ...data,
+      price: {
+        currency: data.currency,
+        value: data.price
+      },
+      images: images.value
+    });
+    return;
+  }
+  store.dispatch('menu/update', {
+    menuId: defaultValues.value._id, 
     ...data,
     price: {
       currency: data.currency,
@@ -62,7 +96,8 @@ watch(createSuccess, (success) => {
     description: 'Menu created successfully',
     variant: 'default'
   });
-  emits('createSuccess');
+  emits('modalUpdate', false);
+  emits('success');
   store.commit('menu/createSuccess', false);
 });
 
@@ -75,20 +110,43 @@ watch(createError, (error) => {
   });
   store.commit('menu/createError', false);
 });
+
+watch(updateSuccess, (success) => {
+  if(!success) return;  
+  toast({
+    title: 'Update success',
+    description: 'Menu updated successfully',
+    variant: 'default'
+  });
+  emits('modalUpdate', false);
+  emits('success');
+  store.commit('menu/updateSuccess', false);
+});
+
+watch(updateError, (error) => {
+  if(!error) return;
+  toast({
+    title: 'Update error',
+    description: error,
+    variant: 'destructive'
+  });
+  store.commit('menu/updateError', false);
+});
+
+const handleUpdateModal = (value: boolean) => {
+  emits('modalUpdate', value);
+}
 </script>
 
 <template>
-  <Dialog>
-    <DialogTrigger :disabled="createPending">
-      <Button :disabled="createPending" class="flex gap-1">
-        <Loader2 v-if="createPending" :size="20" class="animate-spin"/>
-        Add Menu
-      </Button>
-    </DialogTrigger>
+  <Dialog 
+    :open="openModal"
+    @update:open="handleUpdateModal"
+  >
     <DialogContent class="max-w-[700px]">
       <DialogHeader>
         <DialogTitle class="flex gap-x-2">
-          Add Menu
+          {{ action === 'edit' ? 'Edit Menu' : 'Add menu' }}
         </DialogTitle>
       </DialogHeader>
       <form @submit="onSubmit" class="space-y-2" enctype="multipart/form-data">
@@ -185,22 +243,20 @@ watch(createError, (error) => {
             </FormControl>
           </FormItem>
         </FormField>
-
-        <UploadImages 
+        <UploadImages
+          :defaultImages="defaultValues?.images"
           @imagesChange="(value) => images = value"
         />
-
         <DialogFooter class="w-full flex justify-end">
           <DialogClose>
             <Button type="button" variant="ghost">
               Cancel
             </Button>
           </DialogClose>
-          <DialogClose>
-            <Button type="submit" class="flex gap-2">
-              Submit
-            </Button>
-          </DialogClose>
+          <Button type="submit" class="flex gap-2">
+            <Loader2 v-if="createPending || updatePending" :size="18" class="animate-spin"/>
+            Submit
+          </Button>
         </DialogFooter>
       </form>
     </DialogContent>

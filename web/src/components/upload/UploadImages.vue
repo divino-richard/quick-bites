@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { useStore } from '@/store';
 import { Loader2, Upload, UploadCloud, X } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const store = useStore();
 
 const emits = defineEmits(['imagesChange']);
+const props = defineProps({
+  defaultImages: {
+    type: Array<any>,
+    required: true
+  }
+});
+const defaultImages = computed(() => props.defaultImages)
 
 const fileInput = ref();
 const images = ref<any[]>([]);
@@ -17,6 +24,12 @@ const error = computed(() => store.state.upload.error);
 const deletePending = computed(() => store.state.upload.deletePending);
 const deleteSuccess = computed(() => store.state.upload.deleteSuccess);
 const image =  computed(() => store.state.upload.image);
+
+onMounted(() => {
+  if(defaultImages.value) {
+    images.value = defaultImages.value
+  }
+})
 
 const handleSelectImage = () => {
   fileInput.value.click();

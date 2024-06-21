@@ -39,6 +39,11 @@ const handleDeleteMenu = () => {
 watch(success, (success) => {
   if(!success) return;
   openAlert.value = false;
+  toast({
+    title: 'Delete success',
+    description: 'Menu deleted successfully',
+    variant: 'default'
+  });
   emits('deleteSuccess');
   store.commit('menu/deleteSuccess', false);
 });

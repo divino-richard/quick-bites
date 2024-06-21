@@ -3,10 +3,17 @@ import { MenuModel } from "../model/Menu";
 
 interface IGetRestaurantMenus {
   restaurant: string;
+  status?: string;
+  search?: string;
 }
 export async function getRestaurantMenus(params: IGetRestaurantMenus) {
-  const { restaurant } = params;
-  return await MenuModel.find({ restaurant });
+  const { restaurant, status, search } = params;
+  const filter = {
+    restaurant,
+    ...(status && { status }),
+    ...(search && { name: new RegExp(search, 'i') }),
+  };
+  return await MenuModel.find(filter);
 }
 
 interface IGetMenuById {

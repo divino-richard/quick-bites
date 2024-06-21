@@ -5,10 +5,18 @@ import { AxiosError } from "axios";
 import api from "@/utils/api";
 
 const menuActions: ActionTree<MenuState, RootState> = { 
-  async getItems({state, commit}, restaurantId) {
+  async getItems({state, commit}, payload) {
     try {
       state.loadingItems = true;
-      const response = await api.get(`/api/menus?rid=${restaurantId}`);
+      const { restaurantId, status, search } = payload;
+      let queries = `rid=${restaurantId}`;
+      if(status && status !== 'all') {
+        queries += `&status=${status}`;
+      }
+      if(search) {
+        queries += `&search=${search}`;
+      }
+      const response = await api.get(`/api/menus?${queries}`);
       commit('gotItems', response.data);
     } catch (error) {
       let message = '';
@@ -66,6 +74,22 @@ const menuActions: ActionTree<MenuState, RootState> = {
       commit('deleteError', message || "Something went wrong");
     } finally {
       state.deletePending = false;
+    }
+  },
+  async update({state, commit}, payload) {
+    try {
+      const { menuId, ...data } = payload;
+      state.updatePending = true;
+      await api.put(`/api/menus/${menuId}`, data);
+      commit('updateSuccess', true);
+    } catch(error) {
+      let message = '';
+      if(error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      commit('updateError', message || 'Something went wrong');
+    } finally {
+      state.updatePending = false;
     }
   }
 }

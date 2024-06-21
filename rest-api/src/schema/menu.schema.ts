@@ -80,6 +80,8 @@ export const getRestaurantMenusSchema = z.object({
   query: z.object({
     rid: z.string().min(1).refine(id => isValidObjectId(id), {
       message: 'Invalid restaurant id'
-    })
+    }),
+    status: z.string().min(1).optional(),
+    search: z.string().min(1).optional() 
   })
 })

@@ -19,7 +19,13 @@ const menuMutations: MutationTree<MenuState> = {
   },
   deleteError(state, error: string) {
     state.deleteError = error;
-  }
+  },
+  updateError(state, error: string) {
+    state.updateError = error;
+  },
+  updateSuccess(state, success: boolean) {
+    state.updateSuccess = success;
+  },
 }
 
 export default menuMutations;

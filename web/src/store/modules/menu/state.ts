@@ -8,6 +8,9 @@ export interface MenuState {
     deletePending: boolean;
     deleteSuccess: boolean;
     deleteError: string;
+    updatePending: boolean;
+    updateSuccess: boolean;
+    updateError: string;
 }
 
 export const menuState = {
@@ -19,5 +22,8 @@ export const menuState = {
     getItemsError: '',
     deletePending: false,
     deleteSuccess: false,
-    deleteError: ''
+    deleteError: '',
+    updatePending: false,
+    updateSuccess: false,
+    updateError: '',
 } as MenuState
