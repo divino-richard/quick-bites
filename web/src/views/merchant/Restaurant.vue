@@ -15,6 +15,7 @@ import { useRoute, useRouter } from "vue-router";
 import { Button } from "@/components/ui/button";
 import MenuList from "@/components/merchant/MenuList.vue";
 import { Badge } from "@/components/ui/badge";
+import RestaurantDetails from "@/components/merchant/RestaurantDetails.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -84,7 +85,7 @@ const loadingRestaurnt = computed(() => store.state.restaurant.getItemLoading);
             <MenuList :restaurantId="String(restaurantId)"/>
           </TabsContent>
           <TabsContent value="details">
-            <h1>Details</h1>
+            <RestaurantDetails :restaurant="restaurant"/>
           </TabsContent>
         </Tabs>
       </div>

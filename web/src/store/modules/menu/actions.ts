@@ -9,14 +9,13 @@ const menuActions: ActionTree<MenuState, RootState> = {
     try {
       state.loadingItems = true;
       const { restaurantId, status, search } = payload;
-      let queries = `rid=${restaurantId}`;
-      if(status && status !== 'all') {
-        queries += `&status=${status}`;
-      }
-      if(search) {
-        queries += `&search=${search}`;
-      }
-      const response = await api.get(`/api/menus?${queries}`);
+      const response = await api.get('/api/menus', {
+        params: {
+          rid: restaurantId,
+          ...((status && status !== 'all') && { status }),
+          ...(search && { search })
+        }
+      });
       commit('gotItems', response.data);
     } catch (error) {
       let message = '';
@@ -28,13 +27,17 @@ const menuActions: ActionTree<MenuState, RootState> = {
       state.loadingItems = false;
     }
   },
-  async getPublicItems({state, commit}, pagination) {
+  async getPublicItems({state, commit}) {
     try {
       state.loadingItems = true;
       const response = await api.get('/menus', { 
-        params: pagination
+        params: {
+          skip: 0,
+          limit: 10
+        }
       });
-      commit('gotItems', response.data);
+      const { data, totalCount } = response.data;
+      commit('gotItems', data);
     } catch (error) {
       let message = '';
       if (error instanceof AxiosError) {
