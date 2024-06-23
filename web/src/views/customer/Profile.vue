@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useStore } from "@/store";
+import { User, Mail, Phone } from "lucide-vue-next";
+import { computed } from "vue";
+
+const store = useStore();
+
+const session = computed(() => store.state.auth.session);
+</script>
+
 <template>
   <div class="bg-white p-5 rounded-lg max-w-[1250px] mx-auto space-y-5">
     <h1 class="font-medium">Customer's Profile</h1>
@@ -31,14 +42,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useStore } from "@/store";
-import { User, Mail, Phone } from "lucide-vue-next";
-import { computed } from "vue";
-
-const store = useStore();
-
-const session = computed(() => store.state.auth.session);
-</script>

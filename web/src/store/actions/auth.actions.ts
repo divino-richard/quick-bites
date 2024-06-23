@@ -1,6 +1,6 @@
 import { RootState } from "@/store";
 import { ActionTree } from "vuex";
-import { AuthState } from "./state";
+import { AuthState } from "../states/auth.state";
 import { AxiosError } from "axios";
 import api from "@/utils/api";
 import { setSession } from "@/utils/session.utils";

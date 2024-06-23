@@ -1,15 +1,15 @@
 import { InjectionKey } from 'vue';
 import { createStore, useStore as baseUseStore,  Store } from 'vuex';
-import { MenuState } from './modules/menu/state';
-import menuModule from './modules/menu';
-import { AuthState } from './modules/auth/state';
-import authModule from './modules/auth';
-import userModule from './modules/user';
-import { UserState } from './modules/user/state';
-import { RestaurantState } from './modules/restaurant/state';
-import restaurantModule from './modules/restaurant';
-import { UploadState } from './modules/upload/state';
-import uploadModule from './modules/upload';
+import { MenuState } from './states/menu.state';
+import menuModule from './modules/menu.module';
+import { AuthState } from './states/auth.state';
+import authModule from './modules/auth.module';
+import userModule from './modules/user.module';
+import { UserState } from './states/user.state';
+import { RestaurantState } from './states/restaurant.state';
+import restaurantModule from './modules/restaurant.module';
+import { UploadState } from './states/upload.state';
+import uploadModule from './modules/upload.module';
 
 export interface RootState {
     networkError: string;

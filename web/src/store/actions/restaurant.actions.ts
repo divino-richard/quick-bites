@@ -1,5 +1,5 @@
 import { ActionTree } from "vuex";
-import { RestaurantState } from "./state";
+import { RestaurantState } from "../states/restaurant.state";
 import { RootState } from "@/store";
 import { AxiosError } from "axios";
 import api from "@/utils/api";

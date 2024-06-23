@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { UserState } from "./state";
+import { UserState } from "../states/user.state";
 
 const userMutations: MutationTree<UserState> = {
   createSuccess(state, success: boolean) {

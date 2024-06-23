@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { MenuState } from "./state";
+import { MenuState } from "../states/menu.state";
 
 const menuMutations: MutationTree<MenuState> = {
   gotItems(state, items) {

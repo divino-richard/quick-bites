@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { AuthState } from "./state";
+import { AuthState } from "../states/auth.state";
 import { logout } from "@/utils/session.utils";
 
 const authMutations: MutationTree<AuthState> = {

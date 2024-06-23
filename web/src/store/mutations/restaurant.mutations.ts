@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { RestaurantState } from "./state";
+import { RestaurantState } from "../states/restaurant.state";
 
 const restaurantMutations: MutationTree<RestaurantState> = {
   createSuccess(state, success: boolean) {

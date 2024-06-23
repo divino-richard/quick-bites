@@ -1,9 +1,9 @@
 import { MutationTree } from "vuex";
-import { UploadState } from "./state";
+import { UploadState } from "../states/upload.state";
 
 const uploadMutations: MutationTree<UploadState> = {
   uploadSuccess(state, success: boolean) {
-    state.success = success;
+    state.uploadSuccess = success;
     state.error = '';
   },
   uploadError(state, error: string) {
